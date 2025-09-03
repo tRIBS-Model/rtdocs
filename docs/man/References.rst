@@ -1,7 +1,7 @@
 References
 =============
 
-The tRIBS model has a substantial record of peer-reviewed publications. The sections below provide the key references for the model code released under the `tRIBS Github Page <https://github.com/tribshms>`_ as well as the model application carried out in different watersheds and for varying purposes. The model release (v5.2) is documented in the **Journal of Open Source Software** (Raming *et al*., 2024).
+The tRIBS model has a substantial record of peer-reviewed publications. The sections below provide the key references for the model code released under the `tRIBS Github Page <https://github.com/tRIBS-Model>`_ as well as the model application carried out in different watersheds and for varying purposes. The model release (v5.2) is documented in the **Journal of Open Source Software** (Raming *et al*., 2024).
 
 Primary Model References
 ---------------------------
