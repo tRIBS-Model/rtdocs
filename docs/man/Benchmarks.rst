@@ -1,16 +1,44 @@
 Benchmark Datasets
 =====================
 
-Benchmark datasets are publicly available and hosted permanently on Zenodo, under version control and with an assigned digital object identifier (DOI). These examples are provided for a user to test the model execution against a previously-derived set of model outputs. The contents of the benchmark datasets are described both on Zenodo and the accompanying README file, which contain simple instructions for running tRIBS. The point-scale benchmark dataset demonstrates the application of tRIBS in serial mode, whereas the basin-scale benchmark dataset is a simulation that can be executed in either serial or parallel mode.
+A unified set of benchmark datasets is publicly available in a dedicated `GitHub repository`_ and is permanently archived on Zenodo with a version-controlled Digital Object Identifier (DOI).
 
-These examples are for forested regions in northern Arizona with warm and cold season hydrologic processes. As such, these cases test a wide range of the model physics for interception, soil moisture, evapotranspiration, snowpack dynamics and streamflow. Nevertheless, not all of the model capabilities are executed in the benchmark datasets and a model user needs to exercise caution when changing model inputs or altering the selected procesess. 
+These examples are provided for users to validate their tRIBS installation by running the model and comparing their outputs against a trusted set of reference values. This process is now fully automated with a Python-based verification script included in the repository.
 
-Additional benchmark datasets will be addded here as these are released via Zenodo. 
+Verification Workflow
+~~~~~~~~~~~~~~~~~~~~~~~
 
-Point-Scale Simulations
+The recommended workflow for using the benchmarks is as follows:
+
+1.  **Clone the Repository:** Get the latest version of the benchmarks from GitHub.
+2.  **Run a Simulation:** Follow the instructions in the repository's README files to run one of the benchmark cases (e.g., the serial watershed model).
+3.  **Verify the Results:** Use the provided verification script to automatically compare your model's output to the official reference values. The script provides a clear ``[PASS]`` or ``[FAIL]`` status.
+
+   .. code-block:: bash
+
+      python verification/verify.py watershed-scale-serial
+
+This automated check provides immediate confidence that your tRIBS installation is working correctly.
+
+Benchmark Descriptions
+~~~~~~~~~~~~~~~~~~~~~~
+
+The repository contains two primary benchmark cases for forested regions in northern Arizona, which test a wide range of model physics for interception, soil moisture, evapotranspiration, snowpack dynamics, and streamflow.
+
+*   **Point-Scale (Happy Jack, AZ):** This case demonstrates the application of tRIBS in serial mode for a single point, ideal for testing vertical processes.
+*   **Basin-Scale (Big Spring, AZ):** This case is a full watershed simulation that can be executed in either serial or parallel mode, testing spatial and routing processes.
+
+.. warning::
+   Not all model capabilities are executed in the benchmark datasets. A user needs to exercise caution when changing model inputs or altering the selected processes.
+
+Accessing the Benchmarks
 ~~~~~~~~~~~~~~~~~~~~~~~~
-:download:`tRIBS benchmark: SNOTEL point-scale simulation, Happy Jack, AZ, USA. <https://zenodo.org/records/10909507/files/happy_jack.gz?download=1>`
 
-Basin-Scale Simulations
-~~~~~~~~~~~~~~~~~~~~~~~~
-:download:`tRIBS benchmark: Basin-scale simulation, Big Spring, AZ, USA. <https://zenodo.org/records/10951574/files/big_spring.gz?download=1>`
+*   **Primary GitHub Repository:** For the latest version of the input files and verification scripts, clone the `tRIBS Benchmarks Repository`_.
+
+*   **Permanent Archive & Citation:** To cite the benchmarks or download the specific version associated with a tRIBS release, please use the `Zenodo Archive (DOI)`_.
+
+
+.. _tRIBS Benchmarks Repository: https://github.com/tRIBS-Model/tRIBS-benchmarks
+.. _Zenodo Archive (DOI): https://doi.org/10.5281/zenodo.17088972
+.. _GitHub repository: https://github.com/tRIBS-Model/tRIBS-benchmarks

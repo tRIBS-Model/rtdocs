@@ -139,7 +139,7 @@ The inlet/outlet-based graph input (**Table 2.4**) is essentially a three-column
 MeshBuilder
 ~~~~~~~~~~~~
 
-MeshBuilder is a utility program that can automatically generate ``*.reach`` graphfiles for parallel tRIBS simulations. We provide both the `source code <https://github.com/tribshms/MeshBuilder>`_ as well a `docker image <https://tribshms.readthedocs.io/en/latest/man/Docker.html>`_ for MeshBuilder.
+MeshBuilder is a utility program that can automatically generate ``*.reach`` graphfiles for parallel tRIBS simulations. We provide both the `source code <https://github.com/tRIBS-Model/MeshBuilder>`_ as well a `docker image <https://tribshms.readthedocs.io/en/latest/man/Docker.html>`_ for MeshBuilder.
 Instructions for running MeshBuilder are provided in both locations.
 
 Reservoir Model Input

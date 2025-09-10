@@ -10,8 +10,12 @@ The tRIBS source code is stored on GitHub using the version control system Git. 
 
 In summary, this means that, any modification or fixes of the tRIBS source code should take place in your own *fork* of the main tRIBS repository. A fork is a *mirror* of the repository and is hosted on your personal GitHub account. Any updates, modifications, or fixes to the tRIBS source code can be implemented on this fork. These updates then can be merged to the tRIBS main repository through implementing a pull request on the GitHub website.
 
-Note, if you do not already have a GitHub account you will need to create one, likewise you may need to install Git on your computer. Here are links for creating a `GitHub account <https://github.com>`_ and `installing Git <https://help.github.com/en/github/getting-started-with-github/set-up-git>`_, or alternatively you can use a GitHub graphical user interface `here <https://desktop.github.com>`_. If you use Git through the command line you will need to configure your account for write access using an SSH key with relevant documentation provided `here <https://help.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh>`_.
+Note, if you do not already have a GitHub account you will need to create one, likewise you may need to install Git on your computer. You can `create a GitHub account`_ or follow the guide for `installing Git`_. Alternatively, you can use a graphical user interface such as the `GitHub Desktop application`_. If you use Git through the command line, you will need to configure write access using an SSH key, with instructions available in the `GitHub SSH documentation`_.
 
+.. _create a GitHub account: https://github.com
+.. _installing Git: https://help.github.com/en/github/getting-started-with-github/set-up-git
+.. _GitHub Desktop application: https://desktop.github.com
+.. _GitHub SSH documentation: https://help.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh
 
 Forking tRIBS
 -------------
@@ -20,7 +24,7 @@ The following steps will create a fork of the tRIBS repository under
 your GitHub account.
 
 1. Sign in to your GitHub account.
-2. Go to the tRIBS `home page <https://github.com/tribshms/tRIBS>`_
+2. Go to the tRIBS `home page <https://github.com/tRIBS-Model/tRIBS>`_
    on GitHub.
 3. Click the fork button in the upper-right corner of the page.
 
@@ -52,7 +56,7 @@ Use the following commands from the terminal.
 
    $ git clone git@github.com:your-user-name/tRIBS.git
    $ cd tRIBS
-   $ git remote add upstream git://github.com/tribshms/tRIBS.git
+   $ git remote add upstream git@github.com:tRIBS-Model/tRIBS.git
 
 Note if you are running into the following errors,
 

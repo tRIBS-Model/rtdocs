@@ -58,7 +58,7 @@ Note: This step can be skipped if you prefer and are able to use the provided :d
 Setup Benchmark
 ---------------
 
-1. Download the Big Spring benchmark `here <https://zenodo.org/records/10951574/files/big_spring.gz?download=1>`_.
+1. Download the Big Spring benchmark `here <https://doi.org/10.5281/zenodo.17088972>`_.
 
 2. Copy ``tRIBSpar`` into the Big Spring bin sub-directory. Note you will have to double-check that your paths are correct for both locations. Below is an example that will need to be modified.
 

@@ -1,7 +1,7 @@
 Development
 =====================
 
-tRIBS model development is driven by research, testing, and updates in software standards. We document information about the latest release in :doc:`Release Notes`. Technical issues related to tRIBS code are logged using `GitHub Issues <https://github.com/tribshms/tRIBS/issues>`_. Additional resource about model setup and applications can be found through the `tRIBS User Google Group <https://groups.google.com/g/tribs>`_. The remaining portion of this section is dedicated to describing the formal steps involved in tRIBS development and release of new versions. If you are interested in working with the tRIBS source code please see :doc:`Contributing` and :doc:`Using GitHub`.
+tRIBS model development is driven by research, testing, and updates in software standards. We document information about the latest release in :doc:`Release Notes`. Technical issues related to tRIBS code are logged using `GitHub Issues <https://github.com/tRIBS-Model/tRIBS/issues>`_. Additional resource about model setup and applications can be found through the `tRIBS User Google Group <https://groups.google.com/g/tribs>`_. The remaining portion of this section is dedicated to describing the formal steps involved in tRIBS development and release of new versions. If you are interested in working with the tRIBS source code please see :doc:`Contributing` and :doc:`Using GitHub`.
 
 Support
 -------

@@ -1,14 +1,39 @@
-Templates
-=========
-The tRIBS model setup can be facilitated by inspecting prior model runs, including the format of the main text file (Input File ``*.in``) used to input information to the model, as well as example files for gridded or text-based inputs. The tRIBS :doc:`Benchmarks` provide useful examples. Below are some useful templates.
+Templates and Examples
+========================
 
-Input Files
------------
+The best way to learn the tRIBS model setup is to inspect a complete, working example. The `tRIBS Benchmarks repository`_ provides the most up-to-date and useful examples for running the model.
 
-- :download:`Template for tRIBS V 5.2 input file <https://gist.github.com/tribshms/84204d6ab53e0ec9b673d4f2413790f2/archive/4788daf5e1c38f74acd51f25bc37743805542893.zip>`
+We recommend using the input files and run commands from the benchmarks as a starting point for your own simulations.
 
-Shell Scripts
--------------
+tRIBS Input File (*.in)
+-------------------------
 
-- :download:`Example shell script for running tRIBS in parallel <https://gist.github.com/tribshms/f410c644f5419a41de1a5dac317fa2b5/archive/520cc5dc7080ff33a20ee75f6718e8cb0e04312d.zip>`
-- :download:`Example shell script for running tRIBS in serial <https://gist.github.com/tribshms/c341be3abb375fadb225336cc2aebe38/archive/bdee82ce147937458950597369c8091566b368f5.zip>`
+The main input file contains all the runtime options and paths to the required data files. The `big_spring.in` file from the watershed-scale benchmark is an excellent, well-documented example that uses a wide range of model features.
+
+*   **View the template here:** `watershed-scale-big-spring/src/in_files/big_spring.in`_
+
+Execution Scripts and Commands
+------------------------------
+
+Instead of providing static shell scripts, we provide the direct commands needed to run the model. These can be easily incorporated into your own shell scripts.
+
+**Example for running tRIBS in serial mode:**
+
+This command runs the standard tRIBS executable with a given input file.
+
+.. code-block:: bash
+
+   /path/to/your/tRIBS/executable src/in_files/big_spring.in
+
+**Example for running tRIBS in parallel mode:**
+
+This command uses `mpirun` to launch the parallel tRIBS executable (`partRIBS`) on 3 processor cores.
+
+.. code-block:: bash
+
+   mpirun -n 3 /path/to/your/partRIBS/executable src/in_files/big_spring_par.in
+
+For full context on these commands and the required files, please see the README files within the `tRIBS Benchmarks repository`_.
+
+.. _tRIBS Benchmarks repository: https://github.com/tRIBS-Model/tRIBS-benchmarks
+.. _watershed-scale-big-spring/src/in_files/big_spring.in: https://github.com/tRIBS-Model/tRIBS-benchmarks/blob/main/watershed-scale-big-spring/src/in_files/big_spring.in
