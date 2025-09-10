@@ -1,11 +1,11 @@
-Templates and Examples
+Templates
 ========================
 
 The best way to learn the tRIBS model setup is to inspect a complete, working example. The `tRIBS Benchmarks repository`_ provides the most up-to-date and useful examples for running the model.
 
 We recommend using the input files and run commands from the benchmarks as a starting point for your own simulations.
 
-tRIBS Input File (*.in)
+tRIBS Input File `(*.in)`
 -------------------------
 
 The main input file contains all the runtime options and paths to the required data files. The `big_spring.in` file from the watershed-scale benchmark is an excellent, well-documented example that uses a wide range of model features.
