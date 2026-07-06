@@ -1,12 +1,14 @@
 Model Input Formats
 ========================
 
-The tRIBS model is designed to accept input from various types of data formats: grid data, TIN data, point data and text tables. The grid data can be time-invariant (soils and vegetation) or time-varying (rainfall and weather) grids. TIN data are inputted using a variety of methods depending on the application. The point data represent the values of time-varying forcings, such as meteorological data, that are available at specified points within the watershed. Resampling routines are available for geographically overlaying the grid or point data onto the Voronoi polygon mesh. Finally, text tables are used in the model for inputting parameter values associated with soil and vegetation maps or time series of hydrometeorological data.
+The tRIBS model is designed to accept input from various types of data formats: grid data, TIN data, point data and text tables. The grid data can be time-invariant (soils and vegetation) or time-varying (rainfall and weather) grids. TIN mrsh data are inputted using two of methods depending on the application. The point data represent the values of time-varying forcings, such as meteorological data, that are available at specified points within the watershed. Resampling routines are available for geographically overlaying the grid or point data onto the Voronoi polygon mesh. Finally, text tables are used in the model for inputting parameter values associated with soil and vegetation maps or time series of hydrometeorological data.
 
 Grid Input
 ---------------
 
-A standard ASCII grid format is used for all raster input, which may include soil and vegetation index maps, initial groundwater table depth, depth to bedrock, and hydrometeorological grids. The ASCII grid format consists of a small, 6-line header that describes the matrix data presented in the text file, as shown in **Table 2.1**. This format is a convenient method for data exchange and is often used in Geographical Information Systems (GIS). Any extension name for the grid data can be used within tRIBS as long the filename is specified. Although each grid input is treated differently within the model, the grid input format should be identical. The grid pathname and file name are specified within the Input File. The model assumes that a coordinate systems with a spacing in meters along x, y, and z are used, such as the UTM coordinate system.
+A standard ASCII grid format is the default for all raster input, which may include soil and vegetation index maps, initial groundwater table depth, depth to bedrock, and hydrometeorological grids. Recent improvements allow the model to be compilied with GDAL, a popular open-source geospatial software package, this allows any raster type to be used in place of ASCII grid format. See the :doc:`QuickStart` page for details on how to compile the model with GDAL.
+
+The ASCII grid format consists of a small, 6-line header that describes the matrix data presented in the text file, as shown in **Table 2.1**. This format is a convenient method for data exchange and is often used in Geographical Information Systems (GIS). Any extension name for the grid data can be used within tRIBS as long the filename is specified. Although each grid input is treated differently within the model, the grid input format should be identical. The grid pathname and file name are specified within the Input File. The model assumes that a coordinate systems with a spacing in meters along x, y, and z are used, such as the UTM coordin®ate system.
 
         **Table 2.1.** Example of a standard ASCII grid file.
 
@@ -45,10 +47,12 @@ A standard ASCII grid format is used for all raster input, which may include soi
         3) the entire grid can be rectangular, such that *nrows* and *ncols* can differ, and
         4) the NODATA_value can be used to represent cells outside of the domain of interest.
 
-TIN Input
+Mesh Input
 --------------
 
-Topographic data is inputted into the tRIBS Model through a variety of methods that are implemented in the tMesh class.  For applications in real watersheds with complex topography and stream networks, the method of choice is to generate the TIN mesh and export it into a format that tRIBS can read in as a Points File (``*.points``), an example of which is shown in **Table 2.2**. A Points File is a simple text file that contains a listing of point coordinates (*x, y, z*) and the boundary code (*b*) for each point (in that specific order) with a small header that indicates the total number of points in the file. The boundary code is indicative of the node position within the watershed: 0 (mesh interior node), 1 (closed mesh boundary node), 2 (open mesh boundary or outlet node), 3 (stream network node). Proper creation and consistency of the Points File is very important for the tRIBS Model and the ``*.points`` file should be carefully inspected. 
+Topographic data is inputted into the tRIBS Model through a two methods that are implemented in the tMesh class. The two available approaches are selected via the *OPTMESHINPUT* keyword (see :doc:`Model Input File`): providing a Points File that the model triangulates internally, or providing an already-constructed mesh as a set of four files.
+
+The Points File (``*.points``) is the simplest and quickest mesh input to prepare, but offers the least control over the resulting mesh; previously this was the dominant method before the pytRIBS mesh-generation workflow, described below. An example is shown in **Table 2.2**. A Points File is a simple text file that contains a listing of point coordinates (*x, y, z*) and the boundary code (*b*) for each point (in that specific order) with a small header that indicates the total number of points in the file. The boundary code is indicative of the node position within the watershed: 0 (mesh interior node), 1 (closed mesh boundary node), 2 (open mesh boundary or outlet node), 3 (stream network node). Proper creation and consistency of the Points File is very important for the tRIBS Model and the ``*.points`` file should be carefully inspected.
 
         **Table 2.2.** Example of a tRIBS Points File (``*.points``)
 
@@ -72,7 +76,9 @@ Topographic data is inputted into the tRIBS Model through a variety of methods t
         | 630     | 90       | 1        | 1        |
         +---------+----------+----------+----------+
 
-The Points File is the recommended TIN input for the tRIBS Model during the initial model construction, usually necessary when a new basin is modeled for the first time. After a successful tRIBS model run, the model outputs a set of files that describe the TIN mesh properties in greater detail, including the connectivity between nodes and the triangles within the mesh. The set of files includes: ``*.nodes``, ``*.edges``, ``*.tri`` and ``*.z``. These files can be read directly into the model during subsequent model runs, thus avoiding the use of the ``*.points`` file and speeding up the process of mesh construction. 
+Alternatively, tRIBS can read in an already-constructed mesh directly, as the set of four files: ``*.nodes``, ``*.edges``, ``*.tri`` and ``*.z``. These describe the TIN mesh properties in full detail, including the connectivity between nodes and the triangles within the mesh, and are the same files tRIBS itself writes at the end of a run (allowing a mesh to be reused across subsequent runs without repeating the costly triangulation).
+
+These four mesh files can also be generated directly, without ever creating a Points File, using the mesh-generation workflow in the `pytRIBS <https://github.com/tRIBS-Model/pytRIBS>`_ package. This workflow gives substantially more control over how the mesh is constructed than the Points File approach (for example, refinement and boundary handling), and can also generate a ``*.points`` file if one is wanted for use with the legacy triangulation path. An example of this workflow is available in `this repository <https://github.com/tRIBS-Model/tRIBS-Workshop-Sandbox>`_.
 
 Point Station Input
 -------------------------
@@ -84,7 +90,7 @@ Text File Inputs
 
 Various types of text files are used in the tRIBS Model to specify model options, hydrologic parameters or control commands. The most important of the text files is the Model Input File (``*.in``). This file contains various required and optional parameters organized by keywords. The format for each parameter consists of a line of descriptive text followed by the value of the parameter itself on a second line. There are over 100 different keyword inputs in a typical Model Input File. These can be classified into various groupings: Model Run Parameters, Model Run Options and Model Input Files and Pathnames. Subgroupings include: Time Variables, Routing Variables, Mesh Generation, Resampling Grids, Meteorological Data and Output Data. More details concerning the Model Input File will be presented in the section on Model Input File in this document. An example ``.in`` file is provided on the :doc:`Templates` page.
 
-Another important use of text files is for the reclassification of soil and land use grids into meaningful hydrologic parameters assigned to each Voronoi polygon. A simple text file is used to relate each cover class to the particular hydrologic parameter required for the model equations. It consists of a small header followed by a matrix of parameter values for each cover class. In the case of the soil reclassification table (``*.sdt``), the parameters are used to specify the soil hydraulic and thermal properties. In the case of the land reclassification table (``*.ldt``), the parameters are used to relate the cover type to the interception and evapotranspiration properties of the vegetation and land cover. Both types of files will be explain in greater detail in the section on Soil and Land Use Input.
+Another important use of text files is for the reclassification of soil and land use grids into meaningful hydrologic parameters assigned to each Voronoi polygon. A simple CSV file is used to relate each cover class to the particular hydrologic parameter required for the model equations. In the case of the soil reclassification table (``*.sdt``), the parameters are used to specify the soil hydraulic and thermal properties. In the case of the land reclassification table (``*.ldt``), the parameters are used to relate the cover type to the interception and evapotranspiration properties of the vegetation and land cover. See :doc:`Model_Parameters_Forcings` for the detailed file structures of these and the other CSV-based parameter and forcing files (station descriptor/data files, grid data files).
 
 A shell script can also be used to run the model and specify the command line options desired during the run by using a Model Run File (``*_run``). This file consists of a single line that specifies the pathname of the tRIBS executable followed by the name of the Model Input File and the desired command line options. For examples see the :doc:`Templates` page.
 
@@ -136,6 +142,7 @@ The inlet/outlet-based graph input (**Table 2.4**) is essentially a three-column
         +-------------------------+-------------------------+--------------------------+
 
 .. _MeshBuilder:
+
 MeshBuilder
 ~~~~~~~~~~~~
 
