@@ -393,6 +393,8 @@ When the single-layer energy-balance snow module is active (*OPTSNOW = 1*), the 
 
 *OPTPRECPARTITION* selects how precipitation phase is determined: with the default wet-bulb method (*0*), with the wet-bulb method (0), the snow fraction of precipitation decreases continuously with wet-bulb temperature and is set to zero above *MAX_WETBULB_TEMP*; with the linear-transition method (*1*), the model linearly transitions from all-snow at or below *MIN_TEMP_RAIN* to all-rain at or above *MAX_TEMP_SNOW* based on air temperature.
 
+*MIN_SNOW_TEMP* is a legacy parameter carried over from the original implementation of the snow module. The default value listed above is the recommended value.
+
 Monthly Stomatal Resistance Scaling
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
