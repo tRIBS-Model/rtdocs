@@ -93,18 +93,18 @@ Basin Outlet Discharge Time Series
 
   **Table 6.5** Content of *_Outlet.qout file, or *.qout file for interior nodes requested via OUTLETNODELIST
 
-        .. tabularcolumns:: |c|c|c|
+        .. tabularcolumns:: |c|c|c|c|
 
-        +-------+-------------------+--------+
-        | Column| Description       | Units  |
-        +=======+===================+========+
-        | 1     | Time              | [hr]   |
-        +-------+-------------------+--------+
-        | 2     | Discharge, Qstrm  |[m3/s]  |
-        +-------+-------------------+--------+
-        | 3     | Channel stage,    | [m]    |
-        |       | HLevel            |        |
-        +-------+-------------------+--------+
+        +--------+------------+---------------+--------+
+        | Column | Variable   | Description   | Units  |
+        +--------+------------+---------------+--------+
+        | 1      | Time_hr    | Time          | [hr]   |
+        +--------+------------+---------------+--------+
+        | 2      | Qstrm_m3_s | Discharge     | [m3/s] |
+        +--------+------------+---------------+--------+
+        | 3      | Hlev_m     | Channel Stage | [m]    |
+        +--------+------------+---------------+--------+
+
 
 Hydrologic Time Series at Selected TIN nodes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -361,21 +361,22 @@ Basin-averaged Hydrological Time Series
 
   **Table 6.8** Content for *.rft files
 
-        .. tabularcolumns:: |c|c|c|
+        .. tabularcolumns:: |c|c|c|c|
 
-        +-------+-----------------------------------+--------+
-        | Column| Description                       | Units  |
-        +=======+===================================+========+
-        | 1     | Time                              | [hr]   |
-        +-------+-----------------------------------+--------+
-        | 2     | Infiltration-excess Runoff, Hsrf  | [m³/s] |
-        +-------+-----------------------------------+--------+
-        | 3     | Saturation-excess Runoff, Sbsrf   | [m³/s] |
-        +-------+-----------------------------------+--------+
-        | 4     | Perched Return Flow, Psrf         | [m³/s] |
-        +-------+-----------------------------------+--------+
-        | 5     | Groundwater Exfiltration, Satsrf  | [m³/s] |
-        +-------+-----------------------------------+--------+
+        +--------+-------------+----------------------------+--------+
+        | Column | Variable    | Description                | Units  |
+        +--------+-------------+----------------------------+--------+
+        | 1      | Time_hr     | Time                       | [hr]   |
+        +--------+-------------+----------------------------+--------+
+        | 2      | Hsrf_m3_s   | Infiltration-excess Runoff | [m3/s] |
+        +--------+-------------+----------------------------+--------+
+        | 3      | Sbsrf_m3_s  | Saturation-excess Runoff   | [m3/s] |
+        +--------+-------------+----------------------------+--------+
+        | 4      | Psrf_m3_s   | Perched Return Flow        | [m3/s] |
+        +--------+-------------+----------------------------+--------+
+        | 5      | Satsrf_m3_s | Groundwater Exfiltration   | [m3/s] |
+        +--------+-------------+----------------------------+--------+
+
 
 Spatial Output
 ----------------
