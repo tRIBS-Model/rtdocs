@@ -3,6 +3,8 @@ Model Outputs
 
 The tRIBS Model produces a number of output files that represent the time series or the spatial distribution of model state or output variables. Output variables include the position of moisture fronts in the unsaturated zone, water table elevation, surface runoff, subsurface flux, rainfall rate, interception loss, evapotranspiration, and information on the mesh triangulation. **Table 6.1**, **Table 6.2**, and **Table 6.3** summarize: (1) mesh output files, (2) time series outputs, and (3) spatial outputs. More detailed descriptions of the individual files are provided in the following sections.
 
+With the exception of the mesh output files (**Table 6.1**), all output files described on this page are CSV with a single header row; each column header combines the variable name and its units.
+
     **Table 6.1** tRIBS Mesh Output Files
 
             .. tabularcolumns::  |c|c|l|
@@ -51,24 +53,37 @@ The tRIBS Model produces a number of output files that represent the time series
             |*Mesh Integrated Output File* |``*timestamp_00i``|  Time-integrated variable output for all mesh nodes.           |
             +------------------------------+------------------+----------------------------------------------------------------+
 
-    The location of the output files is specified in the tRIBS Model Input File by using the keywords *OUTFILENAME* and *OUTHYDROFILENAME*. An important note to make is that the ``*.mrf``, ``*.rft`` and ``*.dat`` files produced by the model are labeled with additional identifiers before the extension that relate to the time of the output. For each *OPINTRVL* time step, the model will produce output of the ``*.mrf`` type, while the ``*.rft`` file is produced only after completion of the entire run. The spatial output (``*timestamp_00d``) are determined by the time step specified in the *SPOPINTRVL* keyword. Time-integrated spatial output (``*timestamp_00i``) is produced only at the end of the simulation. The model also produces various files with a ``*.pixel`` extension followed by a node ID number at the end of the run. The ``*.pixel#`` files contain the dynamic variable output for a single node for all model times. The number of ``*.pixel#`` files produced is specified through a Node Output List (``*.nol``) File described below.
+    The location of the output files is specified in the tRIBS Model Input File using the keyword *OUTFILENAME*, which serves as the single base pathname for the spatial, hydrologic and outlet output. An important note to make is that the ``*.mrf``, ``*.rft`` and ``*.dat`` files produced by the model are labeled with additional identifiers before the extension that relate to the time of the output. For each *OPINTRVL* time step, the model will produce output of the ``*.mrf`` type, while the ``*.rft`` file is produced only after completion of the entire run. The spatial output (``*timestamp_00d``) are determined by the time step specified in the *SPOPINTRVL* keyword. Time-integrated spatial output (``*timestamp_00i``) is produced only at the end of the simulation. The model also produces various files with a ``*.pixel`` extension. The ``*.pixel`` files contain the dynamic variable output for a single node for all model times. The nodes for which ``*.pixel`` files are produced are specified through a Node Output List (``*.nol``) File, described below; the same file structure is used for the *OUTLETNODELIST* keyword to request interior ``*.qout`` streamflow output at specific nodes.
 
-    **Table 6.4** Node Output List File Structure
+    **Table 6.4** Node/Outlet Output List File Structure (``*.nol``)
+
+    Requested locations can be specified either by node ID or by coordinate; which mode applies is determined by the header row. ID-based (header ``ID``):
 
             .. tabularcolumns:: |c|
 
-            +-----------+
-            | *#Nodes*  |
-            +-----------+
-            | *NodeID 1*|
-            +-----------+
-            | *...*     |
-            +-----------+
-            | *NodeID n*|
-            +-----------+
+            +--------+
+            | *ID*   |
+            +--------+
+            | 105    |
+            +--------+
+            | 250    |
+            +--------+
+            | 407    |
+            +--------+
 
+    Coordinate-based (header ``X,Y``):
 
-    A similar structure and file is used for the keyword *HYDRONODELIST* and *OUTLETNODELIST*. Using this file, allows the user to obtain the runtime hydrologic information in the unsaturated and saturated model for each time step as output to the screen, a useful tool for debugging. No filename suppresses the debugging information.
+            .. tabularcolumns:: |c|c|
+
+            +-------------+-------------+
+            | *X*         | *Y*         |
+            +-------------+-------------+
+            | 456000.0    | 3688978.5   |
+            +-------------+-------------+
+            | 457500.0    | 3689200.0   |
+            +-------------+-------------+
+
+    Both files are CSV with a single header-flag first line and no leading count line; every row after the header is read. Coordinates must be given in the same x/y projection as the mesh, not latitude/longitude, and are resolved at read time to the nearest eligible mesh node. *NODEOUTPUTLIST* resolves to the nearest active computational node, while *OUTLETNODELIST* is restricted to the channel network. The resolved node ID is then used for file naming like in the ID-based path, so the contents and column layout of ``*.pixel`` and ``*.qout`` are unchanged; only how the locations are requested has changed. The resolved snap distance is printed as a diagnostic for every coordinate, and the model warns (without stopping the run) if a coordinate falls outside the domain, or, for outlet requests, if the nearest stream node is much farther away than the nearest node of any type, a sign the coordinate isn't actually on the channel.
 
 Time Series
 -----------
