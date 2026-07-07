@@ -38,9 +38,9 @@ Building tRIBS requires CMake and if you are running tRIBS in parallel you will 
 
 Build tRIBS executable
 ----------------------
-Note: This step can be skipped if you prefer and are able to use the provided :doc:`Executables`. If so the executable can be unpacked by running ``path/to/tRIBS-5.2.0-*.sh`` in the command line.
+Note: This step can be skipped if you prefer and are able to use the provided :doc:`Executables`. If so the executable can be unpacked by running ``path/to/tRIBS-6.0.0-*.sh`` in the command line.
 
-1. Download tRIBS source code from the main branch of the GitHub repository. A direct download link is available `here <https://github.com/tribshms/tRIBS/archive/refs/heads/main.zip>`_. Unzip the repository and using the command line to change to the repository directory. Once in this directory you should see the ``CMakeLists.txt`` file and the ``src`` sub-directory which contains the tRIBS source code. The code block below provides an example of how to do this but you will need to update the path realative to where you have downloaded the tRIBS-main repository.
+1. Download tRIBS source code from the main branch of the GitHub repository. A direct download link is available `here <https://github.com/tRIBS-Model/tRIBS/archive/refs/heads/main.zip>`_. Unzip the repository and using the command line to change to the repository directory. Once in this directory you should see the ``CMakeLists.txt`` file and the ``src`` sub-directory which contains the tRIBS source code. The code block below provides an example of how to do this but you will need to update the path realative to where you have downloaded the tRIBS-main repository.
 
 	.. code-block:: bash
 		
@@ -58,7 +58,7 @@ Note: This step can be skipped if you prefer and are able to use the provided :d
 Setup Benchmark
 ---------------
 
-1. Download the Big Spring benchmark `here <https://doi.org/10.5281/zenodo.17088972>`_.
+1. Download the Big Spring benchmark `here <https://github.com/tRIBS-Model/tRIBS-benchmarks>`_.
 
 2. Copy ``tRIBSpar`` into the Big Spring bin sub-directory. Note you will have to double-check that your paths are correct for both locations. Below is an example that will need to be modified.
 
@@ -87,61 +87,9 @@ Run tRIBS Simulation
 Viewing tRIBS Results
 ---------------------
 
-Once the model has successfully terminated, you should be able to see that the ``results\test\parallel`` sub-directory has been populated with a number of different files. See the `documentation <https://tribshms.readthedocs.io/en/latest/man/Output.html#model-outputs>`_ for details on what the individual files entail. Here we are going to focus on creating a spatial map of mean evapotranspiration rates over the length of the simulation. To do this we will use Python, where we have provided the module ``read_voi.py`` under the directory ``doc/notebooks``. Note, the `pytRIBS package <https://pypi.org/project/pytRIBS/>`_ may also be used for similar purposes but it is currently under development. For the following section we assume python 3 has been installed on you machine.
+Once the model has successfully terminated, you should be able to see that the ``results/test/parallel`` sub-directory has been populated with a number of different files. See :doc:`Output` for details on what the individual files entail. Parallel spatial output is merged automatically by the model, so there is no separate per-processor merge step to run yourself.
 
-1. We recommended you use a virtual environment for this exercise and we provide an example of how to do this below as well as steps required for installing required packages. The code below assumes that you are located in the Big Spring root directory.
-
-	.. code-block:: bash
-
-		python3 -m venv big_spring_env #can be created directly in the big_spring directory
-		source big_spring_env/bin/activate # activate the virtual environment
-		pip install -r doc/notebooks/requirements.txt # install related packages
-		pip install jupyterlab # this is optional but can be used to view doc/notebooks/Results.ipynb
-
-2. Once you have successfully installed the required packages you then can use python to visualize the results. Below we provide an example code snippet that can be used to plot a Voronoi Diagram with each cell colored by the average evapotranspiration rate over the entire simulation. Note here we use the variable ``'AvET'`` but users can update this code with any of the variables found `here <file:///Users/wr/Documents/Repos/Forked/rtdocs/docs/_build/html/man/Output.html#time-integrated-spatial-output-table>`_
-
-	.. code-block:: python
-
-		import geopandas as gpd
-		import pandas as pd
-		import matplotlib.pyplot as plt
-		import matplotlib.font_manager as fm
-		import matplotlib as mpl
-		import numpy as np
-		from matplotlib_scalebar.scalebar import ScaleBar
-
-		# helper scripts to read in spatial results using pandas and geopandas
-		from doc.notebooks import read_voi
-
-		# merge results from different processors
-		par_results = 'results/test/parallel/'
-		int_df_par = read_voi.merge_parallel_spatial_files(f'{par_results}bigsp',35072)
-
-		# generate the voronoi diagaram with variable from integrated file
-		voi_par = read_voi.merge_parallel_voi(f'{par_results}bigsp_voi',join=int_df_par['35072'])
-
-		# see the documentation to see possible variables for plotting
-		fig,ax = plt.subplots()
-		low = np.percentile(voi_par['AvET'], 2.5)
-		high = np.percentile(voi_par['AvET'], 97.5)
-		voi_par.plot(ax=ax,
-					column='AvET', 
-					cmap='YlOrBr',
-					legend=True,
-					vmin=low,
-					vmax=high,
-					legend_kwds={'label': r'ET in mm/hr','orientation': 'horizontal',"shrink":.5})
-		ax.add_artist(ScaleBar(1,location='lower left'))
-		plt.title('Parallel, Big Spring, Arizona, USA: Map of Mean Evapotranspiration Rate')
-		plt.axis('off')
-		plt.show()
-
-  The resulting plot should appear as provided below: 
-
-  .. image:: ../images/QuickStart_example.png
-    :alt: Alternative text for the image
-    :width: 680px
-    :align: center
+The recommended way to load and explore these results is with the `pytRIBS package <https://github.com/tRIBS-Model/pytRIBS>`_, which reads tRIBS output directly and includes built-in plotting methods for common visualizations, such as mapping a spatial variable (e.g. average evapotranspiration) over the Voronoi mesh. For a complete, worked example using this Big Spring output, see the pytRIBS examples referenced from :doc:`Examples`.
 
 
 
