@@ -6,7 +6,7 @@ The development, operation, and execution of the tRIBS model has been improved s
 Packaged Software
 -----------------
 
-We offer tRIBS executables for both MacOS (compatible with Intel or Silicon chips) and Ubuntu. For MacOS, the Intel chip version was built on macOS 13 (Ventura), while the Silicon chip was built on  macOS 14 (Sonoma). The Ubuntu binary was created using version 22.04. If you plan to run the model in parallel using these binaries, it's advisable to have the latest version (5.0.3) of `OpenMPI <https://open-mpi.org/>`_ installed and upgraded. See the :doc:`Executables` page for more details. If these compiled versions are not compatible with your system we also provide a Docker image detailed in the :doc:`Docker` section. And lastly, building tRIBS is a relative simple process as outlined below.
+We offer tRIBS executables for both MacOS (compatible with Intel or Silicon chips) and Ubuntu. For MacOS, the Intel chip version was built on macOS 13 (Ventura), while the Silicon chip was built on  macOS 14 (Sonoma). The Ubuntu binary was created using version 22.04. If you plan to run the model in parallel using these binaries, it's advisable to have OpenMPI 5.x or later (`OpenMPI <https://open-mpi.org/>`_) installed and upgraded. See the :doc:`Executables` page for more details. If these compiled versions are not compatible with your system we also provide a Docker image detailed in the :doc:`Docker` section. And lastly, building tRIBS is a relative simple process as outlined below.
 
 Compilation Instructions
 -------------------------------
@@ -61,16 +61,53 @@ Note you can pass other flags including the optimization level.
 
 The executable will have a name specified by the CMakeLists.txt file. Currently, for the serial version the executable name is tRIBS and tRIBSpar for the parallel version.
 
+GDAL Support (Optional)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default, tRIBS reads gridded raster inputs only as ArcInfo ASCII grids (files beginning with ``NCOLS``). Building with GDAL support allows tRIBS to read any GDAL-supported raster format (e.g. GeoTIFF, NetCDF) for its grid inputs.
+
+1. Install GDAL, including its development headers:
+
+   .. code-block:: bash
+
+       # macOS (Homebrew)
+       brew install gdal
+
+       # Ubuntu / Debian
+       sudo apt-get install libgdal-dev
+
+2. Enable GDAL when configuring the build with ``-DWITH_GDAL=ON``. This can be combined with ``-Dparallel=ON``:
+
+   .. code-block:: bash
+
+       cmake -S . -B build -DWITH_GDAL=ON
+       cmake --build build --target all
+
+3. Confirm GDAL was actually enabled by checking the CMake configure output for:
+
+   ::
+
+       -- GDAL Found: <version>
+       -- Enabling GDAL support.
+
+   .. note::
+
+      If GDAL is requested but not found, the build does **not** fail. tRIBS compiles without GDAL support (ASCII grids only) and prints a warning instead. Always verify the messages above. If CMake cannot locate GDAL, point it to your installation, e.g. ``-DGDAL_ROOT=$(brew --prefix gdal)``.
+
+   .. note::
+
+      The GDAL reader reads the first raster band only, assumes square pixels, performs no reprojection (the raster must already be in the model's coordinate system), and assumes a NoData value of -9999 if none is set.
+
 Run Instructions
 ----------------------
 
-In order to run the tRIBS Model, an Input File is required. This file can have any name, but by convention the extension ``*.in`` is used. The model can be run from the UNIX command line by using the following syntax (within the same directory as the ``tribs`` executable):
+In order to run the tRIBS Model, an Input File is required. This file can have any name, but by convention the extension ``*.in`` is used. The model can be run from the UNIX command line by using the following syntax (within the same directory as the ``tRIBS`` executable):
 
     ::
 
-              % tribs inputfile.in [options]
+              % ./tRIBS inputfile.in [options]
 
-For running the model in parallel mode, mpirun (or a suitable alternative MPI command) is needed:
+For running the model in parallel mode, mpirun (or a suitable alternative MPI command) is needed, along with the parallel executable ``tRIBSpar``:
     ::
 
-              % mpirun [options] ./tRIBS inputfile.in
+              % mpirun [options] ./tRIBSpar inputfile.in
