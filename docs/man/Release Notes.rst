@@ -10,7 +10,7 @@ Known Issues
 - ``OPTPERCOLATION = 3`` (Green-Ampt) currently exits with an error and is unavailable.
 - Flux magnitudes will differ from v5.x results as a result of the water-balance corrections in the 6.0.0 release. This is expected, not a regression.
 
-For a list of known issues and their status, visit the tRIBS GitHub `Issues page <https://github.com/tribshms/tRIBS/issues>`_.
+For a list of known issues and their status, visit the tRIBS GitHub `Issues page <https://github.com/tRIBS-Model/tRIBS/issues>`_.
 
 ------------------------------------------------------------------------------------------
 
