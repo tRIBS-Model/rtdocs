@@ -77,6 +77,7 @@ Computational Processes:
     man/Docker
     man/Executables
     man/Benchmarks
+    man/Examples
     man/Templates
 
 
