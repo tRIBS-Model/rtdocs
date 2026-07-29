@@ -8,7 +8,7 @@ This page covers how to launch a parallel run, how tRIBS partitions the domain, 
 What Changed in v6.0.0
 ----------------------
 
-Parallel tRIBS is now self-contained. Earlier versions required a separate toolchain before a parallel run could start: build the standalone MeshBuilder utility, run it to export reach connectivity, then drive ``gpmetis`` through a chain of Perl scripts (``connectivity2metis.pl`` → ``gpmetis`` → ``metis2tribs.pl``) to produce a ``.reach`` graph file for tRIBS to read. That workflow was fragile, thinly documented, and required users to install and version-match external tools.
+Parallel tRIBS is now self-contained. Earlier versions required a separate toolchain before a parallel run could start: build the standalone MeshBuilder utility, run it to export reach connectivity, then drive ``gpmetis`` through a chain of Perl scripts (``connectivity2metis.pl`` → ``gpmetis`` → ``metis2tribs.pl``) to produce a ``.reach`` graph file for tRIBS to read. 
 
 As of v6.0.0, METIS (v5.2, with GKlib) is vendored into the tRIBS source tree and compiled into the parallel binary, and the reach graph is built and partitioned in-process at startup. There is nothing to install, nothing to run beforehand, and no graph file to manage unless you want one.
 
