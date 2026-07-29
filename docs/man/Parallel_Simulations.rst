@@ -14,7 +14,7 @@ As of v6.0.0, METIS (v5.2, with GKlib) is vendored into the tRIBS source tree an
 
 Three changes follow from this, and users upgrading from v5.x should read them before reusing an old input file:
 
-    * *GRAPHOPTION* has been **repurposed**. It previously selected the type of graph file to read; it now selects the partitioning method. A v5.x input file will run without complaint but will not partition the domain the way it used to. See `Migrating from v5.x`_.
+    * *GRAPHOPTION* has been **repurposed**. It previously selected the type of graph file to read; it now selects the partitioning method.
     * *GRAPHFILE* is now **optional**. Left blank, the partition is generated fresh on every run and written alongside the model output.
     * *PARALLELMODE* gains a third value, ``2``, which partitions the domain, reports on the result, and exits without continuing the simulation.
 
@@ -161,27 +161,14 @@ The time-integrated spatial output file (``*timestamp_00i``) records the rank of
 Choosing a Number of Processors
 -------------------------------
 
-Improvments in computational time for supplying more processors diminish for the usual reasons: as partitions get smaller, each processor does less work per timestep while the number of boundary exchanges grows, and the load balance ratio typically worsens because whole reaches become coarse units relative to an even share. The reach size distribution sets a hard ceiling, a basin whose largest reach holds 307 of 3748 nodes cannot balance well beyond roughly a dozen processors no matter how the remaining reaches are arranged.
+Improvements in computational time for supplying more processors diminish for the usual reasons: as partitions get smaller, each processor does less work per timestep while the number of boundary exchanges grows, and the load balance ratio typically worsens because whole reaches become coarse units relative to an even share.
 
-Partition-only mode is the cheap way to find that ceiling for a given basin: run it at several processor counts and watch where the load balance ratio starts to climb.
+Beyond that, because a reach is indivisible, the reach network itself imposes two hard limits on how far a given basin can usefully be parallelized. Both can be read off the partition statistics before committing to a run.
 
-Migrating from v5.x
--------------------
+The absolute cap is the reach count. A domain of 63 reaches cannot be divided into more than 63 groups, so requesting more processors than the basin has reaches is a fatal error: tRIBS reports the mismatch and exits rather than starting a run with idle ranks.
 
-An input file written for v5.x will run under v6.0.0, but *GRAPHOPTION* no longer means what it did:
+The practical limit arrives well before that cap, and is set by the largest reach. That reach must land on one processor in one piece, so its node count is a floor on the size of the biggest partition, and therefore on the load balance ratio, which can never fall below:
 
-    .. tabularcolumns:: |c|l|l|
+    ``largest reach node count / (total nodes / processors)``
 
-    +-------+-----------------------------------+-------------------------------------------+
-    | Value | Meaning in v5.x                   | Meaning in v6.0.0                         |
-    +=======+===================================+===========================================+
-    | 0     | Default split of the node list    | SF — channel connections only             |
-    +-------+-----------------------------------+-------------------------------------------+
-    | 1     | Read a reach-based graph file     | SSF — adds subsurface neighbor edges      |
-    +-------+-----------------------------------+-------------------------------------------+
-    | 2     | Read an inlet/outlet graph file   | SSFH — adds headwater balancing           |
-    +-------+-----------------------------------+-------------------------------------------+
-
-The practical consequences: a file that used *GRAPHOPTION = 1* with a MeshBuilder-generated *GRAPHFILE* will still read that file, since a set *GRAPHFILE* takes precedence, but only if it validates against the current mesh and processor count. A file that used *GRAPHOPTION = 2* with an inlet/outlet graph file will fail, because that input format has been removed. The recommended migration in both cases is to clear *GRAPHFILE* and set *GRAPHOPTION = 0*, then use partition-only mode to check whether SSF or SSFH does better on your basin.
-
-MeshBuilder itself is no longer needed or recommended, and is not maintained in step with tRIBS releases. It remains available as `source code <https://github.com/tRIBS-Model/MeshBuilder>`_ and as a `docker image <https://tribshms.readthedocs.io/en/latest/man/Docker.html>`_ for users with existing workflows that depend on it, but new setups should not use it. Note that the ``.reach`` file it produces is still readable through *GRAPHFILE*, so a legacy partition can be carried forward as long as the processor count matches.
+Big Spring's largest reach holds 307 of its 3748 nodes, so an even share stops being achievable once ``3748 / n`` drops below 307, at roughly twelve processors. Past that point the floor rises in proportion to the processor count: at 24 processors the best attainable balance is about 2.0, meaning one processor carries twice its share while the rest idle waiting on it. At some point, 36 processors for the example above, adding more processors will not improve the balance and will result in processors with nothing assigned to them. In that case tRIBS will exit the simulation with a warning. That does not mean 36 processors is the optimial choice for the example because with that setup there are exponentially more cross-processor communications required.
