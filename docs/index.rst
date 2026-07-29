@@ -56,6 +56,7 @@ Computational Processes:
     man/Model_Parameters_Forcings
     man/Model Input File
     man/Model_Execution
+    man/Parallel_Simulations
     man/Output
     man/QuickStart
 

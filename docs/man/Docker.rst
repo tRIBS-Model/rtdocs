@@ -39,6 +39,10 @@ In this case ``/tribs/shared`` represents the directory in the image to access y
 MeshBuilder
 ~~~~~~~~~~~
 
+.. note::
+
+   As of tRIBS v6.0.0, MeshBuilder is **not required for parallel simulations**. Reach graph partitioning is performed inside tRIBS itself, so the workflow below is still useable but not recommended. See :doc:`Parallel_Simulations` for details.
+
 Following the above steps one can obtain a Docker image of MeshBuilder as follows:
 
 .. code-block:: bash

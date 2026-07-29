@@ -171,11 +171,11 @@ The tRIBS Model Input File (``*.in``) is currently the primary user interface to
             +-----------------------+-----------------+----------------------------------------------------+
             | *SNOWFILENAME*        | *pathname*      | Snow parameter file (.spf)                         |
             +-----------------------+-----------------+----------------------------------------------------+
-            | *PARALLELMODE*        | *int*           | Run as serial (0) or parallel (1) mode             |
+            | *PARALLELMODE*        | *int*           | Serial (0), parallel (1) or partition-only (2)     |
             +-----------------------+-----------------+----------------------------------------------------+
-            | *GRAPHOPTION*         | *int*           | Option for graph file type (0, 1 or 2)             |
+            | *GRAPHOPTION*         | *int*           | Partitioning method (0, 1 or 2)                    |
             +-----------------------+-----------------+----------------------------------------------------+
-            | *GRAPHFILE*           | *filename*      | Reach connectivity (graph) filename                |
+            | *GRAPHFILE*           | *filename*      | Optional reach partition (graph) filename          |
             +-----------------------+-----------------+----------------------------------------------------+
             | *RESTARTMODE*         | *int*           | Option for restart mode (0, 1, 2 or 3)             |
             +-----------------------+-----------------+----------------------------------------------------+
@@ -276,4 +276,16 @@ As of v6.0.0 the restart module was rewritten to save only the state variables r
 Model Modes: Parallel Mode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The tRIBS model can be run in either serial or parallel mode. The keyword *PARALLELMODE* is used to specify either serial (option 0) or parallel (option 1) computation. If the parallel mode is used, then attention needs to be paid to the graph file partitioning option. Three methods for graph partitioning can be selected utilizing the keyword *GRAPHOPTION*: (a) A default partitioning of the graph (option 0); (b) A reach-based partitioning (option 1); and (c) An inlet/outlet-based partitioning (option 2). If either option 1 or 2 are selected, the keyword *GRAPHFILE* needs to be specified with the name of the graph file to be used (either reach or inlet/outlet based). Otherwise, no filename is required. The most commonly used graph partitioning option is option 1, default partitioning is largely for demonstration only and will likely produce slower simulations than serial mode.
+The tRIBS model can be run in either serial or parallel mode. The keyword *PARALLELMODE* selects serial (option 0), parallel (option 1) or partition-only (option 2) computation. Options 1 and 2 require the parallel executable ``tRIBSpar``; the serial executable exits with a message if either is requested. In partition-only mode the model partitions the domain, writes the reach partition file, prints partition statistics and exits without simulating.
+
+The keyword *GRAPHOPTION* selects the method used to partition the domain across processors. It takes three values: 0 (**SF**), which gives the partitioner the channel connections between reaches only; 1 (**SSF**), which adds the subsurface flux edges between neighboring reaches; and 2 (**SSFH**), which is SSF plus a second constraint balancing non-headwater reaches across partitions.
+
+The keyword *GRAPHFILE* is optional. Left blank, the partition is generated in-process on every run and written alongside the model output as ``<OUTFILENAME>_<method>_<n>nodes.reach``, where *method* is ``SF``, ``SSF`` or ``SSFH`` and *n* is the number of processors; the path is printed to the console. If set, the named file must exist and is read instead, after full validation against the current mesh and processor count. A missing path or file is a fatal error rather than a silent regeneration.
+
+The number of partitions is taken from the number of MPI processes the run was launched with (``mpirun -n``); there is no input keyword for the processor count.
+
+.. warning::
+
+   *GRAPHOPTION* changed meaning in v6.0.0. It previously selected the type of graph file to read (0 = default split, 1 = reach file, 2 = inlet/outlet file); it now selects the partitioning method. Input files carried over from v5.x will run, but will not partition the domain the way they did previously. The inlet/outlet-based graph input has been removed.
+
+See :doc:`Parallel_Simulations` for guidance on choosing among the partitioning methods, using partition-only mode to evaluate a decomposition, and interpreting the partition statistics.

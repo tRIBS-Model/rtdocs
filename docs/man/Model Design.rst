@@ -6,7 +6,7 @@ Model Design
 Model File Structure
 --------------------------
 
-    The tRIBS Model is organized into a single directory (called ``tRIBS``) with various sub directories that contain the model C++ classes. Each sub directory encapsulates classes with similar functionality or behavior. **Table 1.1** shows the sub directories as a user would see upon downloading the source code. Various of these sub directories deal with the hydrologic processes (``tHydro``, ``tFlowNet``, ``tRasTin``), others create the mesh architecture (``tMesh``, ``tMeshElements``, ``tMeshList``), while others are general purpose classes used for model execution (``tSimulator``, ``tInOut``, ``tCNode``) or within other classes (``tArray``, ``tList``, ``tPtrList``).  The ``Headers`` and ``Mathutil`` directories contain global header files and mathematical utilities for the model, respectively. Two subdirectories have been added for parallelization (``tGraph``, ``tParallel``).
+    The tRIBS Model is organized into a single directory (called ``tRIBS``) with various sub directories that contain the model C++ classes. Each sub directory encapsulates classes with similar functionality or behavior. **Table 1.1** shows the sub directories as a user would see upon downloading the source code. Various of these sub directories deal with the hydrologic processes (``tHydro``, ``tFlowNet``, ``tRasTin``), others create the mesh architecture (``tMesh``, ``tMeshElements``, ``tMeshList``), while others are general purpose classes used for model execution (``tSimulator``, ``tInOut``, ``tCNode``) or within other classes (``tArray``, ``tList``, ``tPtrList``).  The ``Headers`` and ``Mathutil`` directories contain global header files and mathematical utilities for the model, respectively. Three subdirectories support parallelization (``tGraph``, ``tParallel``, ``tPartition``), and ``metis_builds`` holds the vendored copy of METIS and GKlib that is compiled into the parallel executable to partition the reach graph.
 
         **Table 1.1** tRIBS Model Subdirectories
 
@@ -24,6 +24,8 @@ Model File Structure
         |  tCNode            |  tMeshElements     |  tGraph            |
         +--------------------+--------------------+--------------------+
         |  tHydro            |  tFlowNet          |  tParallel         |
+        +--------------------+--------------------+--------------------+
+        |  tPartition        |  metis_builds      |                    |
         +--------------------+--------------------+--------------------+
 
     In addition to the sub directories, the ``tRIBS`` directory contains the main function (``main.cpp``) and the CMake build configuration (``CMakeLists.txt``). tRIBS uses CMake for an out-of-source build: from a build directory, ``cmake -Dparallel=OFF ..`` followed by ``make`` compiles the serial executable (``tRIBS``), while ``cmake -Dparallel=ON ..`` produces the MPI parallel executable (``tRIBSpar``). GDAL support for raster I/O can be enabled with ``-DWITH_GDAL=ON``. Each sub directory of the source code includes the C++ class files (``*.cpp`` used as convention) and the C++ Header Files (``*.h``). **Table 1.2** shows a list of the code files in the tRIBS model for further reference.
@@ -85,6 +87,10 @@ Model File Structure
         +--------------------+-------------------------------------------------------------------+
         |                    |  tParallel.h, tParallel.cpp                                       |
         +--------------------+-------------------------------------------------------------------+
+        |  /tPartition       |  tPartition.h, tPartition.cpp                                     |
+        +--------------------+-------------------------------------------------------------------+
+        |  /metis_builds     |  vendored METIS 5.2 and GKlib sources                             |
+        +--------------------+-------------------------------------------------------------------+
         |  /tPtrList         |  tPtrList.h, tPtrList.cpp                                         |
         +--------------------+-------------------------------------------------------------------+
         |  /tRasTin          |  tInvariant.h, tInvariant.cpp, tRainfall.h, tRainfall.cpp,        |
@@ -110,8 +116,7 @@ Computational Mesh
     The tRIBS Model inherited the Triangulated Irregular Network (TIN) mesh architecture from the CHILD model (Tucker *et al.*, 1999) using various options in the ``tMesh`` class. In addition, new input capabilities take advantage of the TIN creation capabilities in external multiple reslution mesh generators to represent real world watersheds as "hydrologically" significant TINs. The most used options for creating the computational mesh are the following:
 
       - Generate a new mesh from a given set of coordinates (x , y , z, b) with a boundary flag (``*.points``).
-      - Generate a new mesh using the outputs of tRIBS Meshbuilder for large domains (``*.nodes``, ``*.edges``, ``*.tri``, ``*.z``).
-      - Read in existing tRIBS Mesh files from a previous run (``*.nodes``, ``*.edges``, ``*.tri``, ``*.z``).
+      - Read in existing tRIBS Mesh files, either written by a previous run or generated with the pytRIBS mesh-generation workflow (``*.nodes``, ``*.edges``, ``*.tri``, ``*.z``).
 
     A TIN within these methods is a set of highly interconnected triangle objects with three edge and three node objects (as defined in ``meshElements.cpp``). The TIN mesh allows for flow from TIN node to TIN node, along a triangle edge, using a finite difference approach. Hydrologic computations made at each TIN node (e.g. infiltration, evaporation, groundwater table elevation) are assumed valid over a region consisting of the Voronoi polygon associated with the node. In this way the Voronoi polygon is used as the control volume for mass conservation. The Voronoi polygon is the dual diagram of the TIN mesh and can be computed by the intersection of perpendicular bisectors to each TIN edge.
 

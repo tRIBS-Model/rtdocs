@@ -111,3 +111,5 @@ For running the model in parallel mode, mpirun (or a suitable alternative MPI co
     ::
 
               % mpirun [options] ./tRIBSpar inputfile.in
+
+The number of processes given to ``mpirun`` also sets the number of partitions the domain is divided into; tRIBS builds and partitions the reach graph itself at startup, with no preprocessing step required. See :doc:`Parallel_Simulations` for how the domain is partitioned, how to choose a partitioning method, and how to evaluate a decomposition before committing to a full run.
