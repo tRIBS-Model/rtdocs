@@ -182,105 +182,103 @@ Hydrologic Time Series at Selected TIN nodes
         +--------+----------------------+----------------------------------------------------+---------+
         | 33     | PotEvp_mm_h          | Potential Evaporation                              | [mm/hr] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 34     | ActEvp_mm_h          | Actual Evaporation                                 | [mm/hr] |
+        | 34     | EvpTtrs_mm_h         | Total Evapotranspiration                           | [mm/hr] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 35     | EvpTtrs_mm_h         | Total Evapotranspiration                           | [mm/hr] |
+        | 35     | EvpWetCan_mm_h       | Evaporation from Wet Canopy                        | [mm/hr] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 36     | EvpWetCan_mm_h       | Evaporation from Wet Canopy                        | [mm/hr] |
+        | 36     | TransDryCan_mm_h     | Evaporation from Dry Canopy                        | [mm/hr] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 37     | EvpDryCan_mm_h       | Evaporation from Dry Canopy                        | [mm/hr] |
+        | 37     | EvpSoil_mm_h         | Evaporation from Bare Soil                         | [mm/hr] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 38     | EvpSoil_mm_h         | Evaporation from Bare Soil                         | [mm/hr] |
+        | 38     | Gflux_W_m2           | Ground Heat Flux                                   | [W/m2]  |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 39     | Gflux_W_m2           | Ground Heat Flux                                   | [W/m2]  |
+        | 39     | HFlux_W_m2           | Sensible Heat Flux                                 | [W/m2]  |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 40     | HFlux_W_m2           | Sensible Heat Flux                                 | [W/m2]  |
+        | 40     | Lflux_W_m2           | Latent Heat Flux                                   | [W/m2]  |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 41     | Lflux_W_m2           | Latent Heat Flux                                   | [W/m2]  |
+        | 41     | NetPrecip_mm_hr      | Net Precipitation                                  | [mm/hr] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 42     | NetPrecip_mm_hr      | Net Precipitation                                  | [mm/hr] |
+        | 42     | LiqWE_cm             | Liquid Water Equivalent                            | [cm]    |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 43     | LiqWE_cm             | Liquid Water Equivalent                            | [cm]    |
+        | 43     | IceWE_cm             | Ice Water Equivalent                               | [cm]    |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 44     | IceWE_cm             | Ice Water Equivalent                               | [cm]    |
+        | 44     | SnWE_cm              | Snow Water Equivalent                              | [cm]    |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 45     | SnWE_cm              | Snow Water Equivalent                              | [cm]    |
+        | 45     | SnSub_cm             | Sublimation from Snowpack                          | [cm]    |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 46     | SnSub_cm             | Sublimation from Snowpack                          | [cm]    |
+        | 46     | SnEvap_cm            | Evaporation from Snowpack                          | [cm]    |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 47     | SnEvap_cm            | Evaporation from Snowpack                          | [cm]    |
+        | 47     | U_kJ_m2              | Internal Energy of Snow Pack                       | [kJ/m2] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 48     | U_kJ_m2              | Internal Energy of Snow Pack                       | [kJ/m2] |
+        | 48     | RouteWE_cm           | Routed Melt Water Equivalent                       | [cm]    |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 49     | RouteWE_cm           | Routed Melt Water Equivalent                       | [cm]    |
+        | 49     | SnTemp_C             | Snow Temperature                                   | [C]     |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 50     | SnTemp_C             | Snow Temperature                                   | [C]     |
+        | 50     | SurfAge_h            | Snow Surface Age                                   | [hr]    |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 51     | SurfAge_h            | Snow Surface Age                                   | [hr]    |
+        | 51     | SnDepth_cm           | Snow Depth                                         | [cm]    |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 52     | SnDepth_cm           | Snow Depth                                         | [cm]    |
+        | 52     | SnDensity_kg_m3      | Snow Density                                       | [kg/m3] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 53     | SnDensity_kg_m3      | Snow Density                                       | [kg/m3] |
+        | 53     | DU_kJ_m2             | Change in Snow Pack Internal Energy                | [kJ/m2] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 54     | DU_kJ_m2             | Change in Snow Pack Internal Energy                | [kJ/m2] |
+        | 54     | snLHF_kJ_m2          | Latent Heat Flux from Snow Cover                   | [kJ/m2] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 55     | snLHF_kJ_m2          | Latent Heat Flux from Snow Cover                   | [kJ/m2] |
+        | 55     | snSHF_kJ_m2          | Sensible Heat Flux from Snow Cover                 | [kJ/m2] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 56     | snSHF_kJ_m2          | Sensible Heat Flux from Snow Cover                 | [kJ/m2] |
+        | 56     | snGHF_kJ_m2          | Ground Heat Flux from Snow Cover                   | [kJ/m2] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 57     | snGHF_kJ_m2          | Ground Heat Flux from Snow Cover                   | [kJ/m2] |
+        | 57     | snPHF_kJ_m2          | Precip Heat Flux from Snow Cover                   | [kJ/m2] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 58     | snPHF_kJ_m2          | Precip Heat Flux from Snow Cover                   | [kJ/m2] |
+        | 58     | snRLout_kJ_m2        | Outgoing Longwave Radiation from Snow              | [kJ/m2] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 59     | snRLout_kJ_m2        | Outgoing Longwave Radiation from Snow              | [kJ/m2] |
+        | 59     | snRLin_kJ_m2         | Incoming Longwave Radiation from Snow              | [kJ/m2] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 60     | snRLin_kJ_m2         | Incoming Longwave Radiation from Snow              | [kJ/m2] |
+        | 60     | snRSin_kJ_m2         | Incoming Shortwave Radiation from Snow             | [kJ/m2] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 61     | snRSin_kJ_m2         | Incoming Shortwave Radiation from Snow             | [kJ/m2] |
+        | 61     | Uerror_kJ_m2         | Error in Energy Balance                            | [kJ/m2] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 62     | Uerror_kJ_m2         | Error in Energy Balance                            | [kJ/m2] |
+        | 62     | IntSWEq_cm           | Intercepted Snow Water Equivalent                  | [cm]    |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 63     | IntSWEq_cm           | Intercepted Snow Water Equivalent                  | [cm]    |
+        | 63     | IntSub_cm            | Sublimated Snow Water Equivalent from Canopy       | [cm]    |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 64     | IntSub_cm            | Sublimated Snow Water Equivalent from Canopy       | [cm]    |
+        | 64     | IntSnUnload_cm       | Unloaded Snow Water Equivalent from Canopy         | [cm]    |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 65     | IntSnUnload_cm       | Unloaded Snow Water Equivalent from Canopy         | [cm]    |
+        | 65     | CanStorage_mm        | Canopy Storage                                     | [mm]    |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 66     | CanStorage_mm        | Canopy Storage                                     | [mm]    |
+        | 66     | CumIntercept_mm      | Cumulative Interception                            | [mm]    |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 67     | CumIntercept_mm      | Cumulative Interception                            | [mm]    |
+        | 67     | Interception_mm      | Interception                                       | [mm]    |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 68     | Interception_mm      | Interception                                       | [mm]    |
+        | 68     | Recharge_mm/hr       | Recharge                                           | [mm/hr] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 69     | Recharge_mm/hr       | Recharge                                           | [mm/hr] |
+        | 69     | RunOn_mm             | Runon                                              | [mm]    |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 70     | RunOn_mm             | Runon                                              | [mm]    |
+        | 70     | Qstrm_m3_s           | Discharge                                          | [m3/s]  |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 71     | Qstrm_m3_s           | Discharge                                          | [m3/s]  |
+        | 71     | Hlevel_m             | Channel Stage                                      | [m]     |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 72     | Hlevel_m             | Channel Stage                                      | [m]     |
+        | 72     | ThroughFall_[]       | Free Throughfall Coefficient - Rutter              | [-]     |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 73     | ThroughFall_[]       | Free Throughfall Coefficient - Rutter              | [-]     |
+        | 73     | CanFieldCap_mm       | Canopy Field Capacity - Rutter                     | [mm]    |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 74     | CanFieldCap_mm       | Canopy Field Capacity - Rutter                     | [mm]    |
+        | 74     | DrainCoeff_mm_hr     | Drainage Coefficient - Rutter                      | [mm/hr] |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 75     | DrainCoeff_mm_hr     | Drainage Coefficient - Rutter                      | [mm/hr] |
+        | 75     | DrainExpPar_1_mm     | Drainage Exponent Parameter - Rutter               | [mm-1]  |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 76     | DrainExpPar_1_mm     | Drainage Exponent Parameter - Rutter               | [mm-1]  |
+        | 76     | LandUseAlb_[]        | Albedo                                             | [-]     |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 77     | LandUseAlb_[]        | Albedo                                             | [-]     |
+        | 77     | VegHeight_m          | Vegetation Height                                  | [m]     |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 78     | VegHeight_m          | Vegetation Height                                  | [m]     |
+        | 78     | OptTransmCoeff_[]    | Optical Transmission Coefficient                   | [-]     |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 79     | OptTransmCoeff_[]    | Optical Transmission Coefficient                   | [-]     |
+        | 79     | StomRes_s_m          | Canopy-Average Stomatal Resistance                 | [s/m]   |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 80     | StomRes_s_m          | Canopy-Average Stomatal Resistance                 | [s/m]   |
+        | 80     | VegFraction_[]       | Vegetation Fraction                                | [-]     |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 81     | VegFraction_[]       | Vegetation Fraction                                | [-]     |
+        | 81     | LeafAI_[]            | Canopy Leaf Area Index                             | [-]     |
         +--------+----------------------+----------------------------------------------------+---------+
-        | 82     | LeafAI_[]            | Canopy Leaf Area Index                             | [-]     |
-        +--------+----------------------+----------------------------------------------------+---------+
-        | 83     | RootZoneDepth_m      | Rootzone Depth                                     | [m]     |
+        | 82     | RootZoneDepth_m      | Rootzone Depth                                     | [m]     |
         +--------+----------------------+----------------------------------------------------+---------+
 
 Basin-averaged Hydrological Time Series
@@ -457,7 +455,7 @@ Dynamic Spatial Output Tables
         +--------+----------------+------------------------------------------------+---------+
         | 32     | CanStorage     | Canopy Storage                                 | [mm]    |
         +--------+----------------+------------------------------------------------+---------+
-        | 33     | ActEvp         | Actual Evaporation                             | [mm/hr] |
+        | 33     | TransDryCan    | Canopy Transpiration                           | [mm/hr] |
         +--------+----------------+------------------------------------------------+---------+
         | 34     | EvpSoil        | Evaporation from Bare Soil                     | [mm/hr] |
         +--------+----------------+------------------------------------------------+---------+
