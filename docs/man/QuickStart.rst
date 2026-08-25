@@ -38,7 +38,7 @@ Building tRIBS requires CMake and if you are running tRIBS in parallel you will 
 
 Build tRIBS executable
 ----------------------
-Note: This step can be skipped if you prefer and are able to use the provided :doc:`Executables`. If so the executable can be unpacked by running ``path/to/tRIBS-6.0.0-*.sh`` in the command line.
+Note: If you only need the serial version of tRIBS, this step can be skipped by using one of the provided :doc:`Executables`, which can be unpacked by running ``path/to/tRIBS-6.0.0-*.sh`` in the command line. A parallel executable is not distributed, so building from source as described below is required to run tRIBS in parallel.
 
 1. Download tRIBS source code from the main branch of the GitHub repository. A direct download link is available `here <https://github.com/tRIBS-Model/tRIBS/archive/refs/heads/main.zip>`_. Unzip the repository and using the command line to change to the repository directory. Once in this directory you should see the ``CMakeLists.txt`` file and the ``src`` sub-directory which contains the tRIBS source code. The code block below provides an example of how to do this but you will need to update the path realative to where you have downloaded the tRIBS-main repository.
 

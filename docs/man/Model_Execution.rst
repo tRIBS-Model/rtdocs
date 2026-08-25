@@ -6,7 +6,7 @@ The development, operation, and execution of the tRIBS model has been improved s
 Packaged Software
 -----------------
 
-We offer tRIBS executables for both MacOS (compatible with Intel or Silicon chips) and Ubuntu. For MacOS, the Intel chip version was built on macOS 13 (Ventura), while the Silicon chip was built on  macOS 14 (Sonoma). The Ubuntu binary was created using version 22.04. If you plan to run the model in parallel using these binaries, it's advisable to have OpenMPI 5.x or later (`OpenMPI <https://open-mpi.org/>`_) installed and upgraded. See the :doc:`Executables` page for more details. If these compiled versions are not compatible with your system we also provide a Docker image detailed in the :doc:`Docker` section. And lastly, building tRIBS is a relative simple process as outlined below.
+We offer tRIBS executables for both MacOS (compatible with Intel or Silicon chips) and Ubuntu. For MacOS, the Intel chip version was built on macOS 13 (Ventura), while the Silicon chip was built on  macOS 14 (Sonoma). The Ubuntu binary was created using version 22.04. These packaged binaries are serial builds only; to run tRIBS in parallel you will need to use the Docker image or compile from source against the MPI installation on your own system. See the :doc:`Executables` page for more details. If these compiled versions are not compatible with your system we also provide a Docker image detailed in the :doc:`Docker` section. And lastly, building tRIBS is a relative simple process as outlined below.
 
 Compilation Instructions
 -------------------------------
