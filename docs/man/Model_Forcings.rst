@@ -54,6 +54,9 @@ Meteorological input into tRIBS can from point data or grid data, depending on t
             | *Examples*   | ``tHydroMet``, ``tRainGauge``        | ``tRainfall``, ``tVariant``, ``tInvariant``   |
             +--------------+--------------------------------------+-----------------------------------------------+
 
+Station (Point) Data
+~~~~~~~~~~~~~~~~~~~~
+
 The Station Descriptor Files (``*.sdf``) and Meteorological Data Files (``*.mdf``) are plain CSV files with a single required header row. Both weather station and rain gauge SDFs share the same five-column structure (**Table 4.3**).
 
         **Table 4.3.** Weather Station / Rain Gauge SDF Structure
@@ -100,9 +103,53 @@ The Weather Station MDF has exactly 11 columns.
             | ...    | ...     | ...   | ...    | ...        |
             +--------+---------+-------+--------+------------+
 
-Note the following for all MDF files: the parameter names must be placed in the header row, there must be one row per timestep following the header, missing data must be inputted with the *NO_DATA* flag *= 9999.99* (interpolated internally), and units must be retained as indicated. A column-count mismatch against the expected header causes the model to exit with an error at startup. Notice that the file does not contain a minute column. Nevertheless, sub-hourly data can be inputted into the model at intervals that are multiples of the *TIMESTEP*. For example, for 15-minute data, the user should specify four rows for each hour (same *Hour*) in order. A similar approach is taken for sub-hourly rain gauge data.
+Note the following for all MDF files: the parameter names must be placed in the header row, there must be one row per timestep following the header, missing data must be inputted with the *NO_DATA* flag *= 9999.99* (interpolated internally), and units must be retained as indicated. A column-count mismatch against the expected header causes the model to exit with an error at startup. Notice that the file does not contain a minute column; see `Sub-hourly Forcings`_ below for how sub-hourly data is supplied.
 
-An alternative input format type for meteorological data is with the use of grid data. This option in the tRIBS model is used with the keyword *METDATAOPTION = 2*, while the more traditional weather station data is specified with *METDATAOPTION = 1*.  The additional information is provided through a text file for reading in meteorological input (``*.gdf``) as specified through the keyword *HYDROMETGRID* in the Input File. The structure of the Grid Data File or GDF is presented in **Table 4.7**.
+Sub-hourly Forcings
+~~~~~~~~~~~~~~~~~~~
+
+Both rainfall and meteorological forcing can be supplied at sub-hourly resolution, but only as point data from stations. Gridded input, whether rainfall or meteorological, is read at hourly resolution.
+
+Two keywords in the Model Input File (``*.in``) set the input intervals, and they are set independently of one another:
+
+* *RAININTRVL* sets the rainfall input interval, **in hours**. For sub-hourly rain gauge data this is a fraction: ``0.25`` for 15-minute data, ``0.5`` for 30-minute data.
+* *METSTEP* sets the meteorological input interval, **in minutes**. For sub-hourly weather station data this is ``15`` for 15-minute data, ``30`` for 30-minute data.
+
+The sub-hourly interval is not arbitrary: it must be a multiple of the unsaturated zone computational time step set by *TIMESTEP*. With the default *TIMESTEP* of 3.75 minutes, this permits intervals such as 7.5, 15 and 30 minutes, but not 10 minutes. If a finer or unconventional interval is needed, *TIMESTEP* must be set so that the desired input interval remains a multiple of it.
+
+Because *RAININTRVL* and *METSTEP* are set independently, the rainfall and meteorological inputs do not have to share a resolution. Hourly meteorological forcing can be combined with sub-hourly precipitation, or sub-hourly meteorological forcing with hourly precipitation, by setting each keyword to match the data actually provided.
+
+Neither the Weather Station MDF (**Table 4.4**) nor the Rain Gauge MDF (**Table 4.5**) has a minute column. Sub-hourly data is instead supplied by repeating the *Hour* value across consecutive rows, one row per interval, in chronological order. For 15-minute data, four consecutive rows carry the same *Year*, *Month*, *Day* and *Hour*, and the model assigns them to the four quarters of that hour in the order they appear:
+
+        .. tabularcolumns::  |c|c|c|c|c|
+
+        +--------+---------+-------+--------+--------------+
+        | *Year* | *Month* | *Day* | *Hour* | *Rain_mm/hr* |
+        +--------+---------+-------+--------+--------------+
+        | 2024   | 6       | 1     | 0      | 0.0          |
+        +--------+---------+-------+--------+--------------+
+        | 2024   | 6       | 1     | 0      | 2.4          |
+        +--------+---------+-------+--------+--------------+
+        | 2024   | 6       | 1     | 0      | 3.6          |
+        +--------+---------+-------+--------+--------------+
+        | 2024   | 6       | 1     | 0      | 1.2          |
+        +--------+---------+-------+--------+--------------+
+        | 2024   | 6       | 1     | 1      | 0.8          |
+        +--------+---------+-------+--------+--------------+
+
+Because the rows are matched by position rather than by an explicit minute stamp, the row ordering within each hour is significant and no intervals may be skipped: an hour of 15-minute data must contain exactly four rows, even where the values are zero.
+
+Gridded Forcings
+~~~~~~~~~~~~~~~~
+
+Rainfall and meteorological forcing can each be supplied as a time series of ASCII grids instead of station data. The two are configured separately, so one may be gridded while the other is point data.
+
+**Gridded rainfall.** Gridded (radar) rainfall is selected with *RAINSOURCE = 1*, while rain gauge station data is *RAINSOURCE = 2*. Rather than listing the individual grids, two keywords in the Input File describe how their filenames are constructed:
+
+* *RAINFILE* gives the base pathname of the grid series, including the basename of the files but not the timestamp or extension, for example ``data/model/met/rain/radar_``.
+* *RAINEXTENSION* gives the file extension used by the grids, without the leading period, for example ``asc``.
+
+**Gridded meteorology.** Gridded meteorological data is selected with the keyword *METDATAOPTION = 2*, while the more traditional weather station data is specified with *METDATAOPTION = 1*. Here the information is provided through a text file for reading in meteorological input (``*.gdf``) as specified through the keyword *HYDROMETGRID* in the Input File, with one row per variable. The structure of the Grid Data File or GDF is presented in **Table 4.7**.
 
            **Table 4.7** Meteorological GDF File Structure
 
@@ -127,3 +174,11 @@ An alternative input format type for meteorological data is with the use of grid
             +------------+--------------------+-----------------+
 
 As with the soil and land-use GDFs (**Tables 3.6, 3.7** in :doc:`Model_Parameters`), this file is CSV with a single header row (*Variable*, *BasePath*, *FileExtension*). The *NO_DATA* flag is used to specify that weather grids are not available for a particular parameter. All the keywords used to represent the parameters are fixed as well as the units.
+
+**Grid filenames.** Neither the rainfall nor the meteorological configuration lists individual grid files. In both cases the model constructs each filename at run time by appending a timestamp to the base name and then the extension:
+
+.. code-block:: text
+
+   <base name><MMDDYYYYHH>.<extension>
+
+The timestamp is zero-padded month, day, four-digit year and hour. A meteorological grid with a base name of ``RH`` for 03:00 on 1 June 2002 is therefore ``RH0601200203.asc``, and a rainfall series with *RAINFILE* = ``data/model/met/rain/radar_`` and *RAINEXTENSION* = ``asc`` expects ``data/model/met/rain/radar_0601200203.asc`` for that same hour. Grids must be named to this convention or the model will not find them; the *RAINSEARCH* keyword controls how many hours the model will look ahead for a missing rainfall grid before exiting.
