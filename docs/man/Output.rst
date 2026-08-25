@@ -1,11 +1,11 @@
 Model Outputs
 ==================================
 
-The tRIBS Model produces a number of output files that represent the time series or the spatial distribution of model state or output variables. Output variables include the position of moisture fronts in the unsaturated zone, water table elevation, surface runoff, subsurface flux, rainfall rate, interception loss, evapotranspiration, and information on the mesh triangulation. **Table 6.1**, **Table 6.2**, and **Table 6.3** summarize: (1) mesh output files, (2) time series outputs, and (3) spatial outputs. More detailed descriptions of the individual files are provided in the following sections.
+The tRIBS Model produces a number of output files that represent the time series or the spatial distribution of model state or output variables. Output variables include the position of moisture fronts in the unsaturated zone, water table elevation, surface runoff, subsurface flux, rainfall rate, interception loss, evapotranspiration, and information on the mesh triangulation. **Table 8.1**, **Table 8.2**, and **Table 8.3** summarize: (1) mesh output files, (2) time series outputs, and (3) spatial outputs. More detailed descriptions of the individual files are provided in the following sections.
 
-With the exception of the mesh output files (**Table 6.1**), all output files described on this page are CSV with a single header row; each column header combines the variable name and its units.
+With the exception of the mesh output files (**Table 8.1**), all output files described on this page are CSV with a single header row; each column header combines the variable name and its units.
 
-    **Table 6.1** tRIBS Mesh Output Files
+    **Table 8.1** tRIBS Mesh Output Files
 
             .. tabularcolumns::  |c|c|l|
 
@@ -24,7 +24,7 @@ With the exception of the mesh output files (**Table 6.1**), all output files de
             |*Mesh Voronoi Geometry*       | ``*_voi``        |  File containing individual Voronoi polygon geometry.          |
             +------------------------------+------------------+----------------------------------------------------------------+
 
-    **Table 6.2** tRIBS Model Time Series Files
+    **Table 8.2** tRIBS Model Time Series Files
 
             .. tabularcolumns::  |c|c|l|
 
@@ -41,7 +41,7 @@ With the exception of the mesh output files (**Table 6.1**), all output files de
             |*Node Dynamic Output File*    |  ``*.pixel``     | Time series of dynamic variables for a specific node.          |
             +------------------------------+------------------+----------------------------------------------------------------+
 
-    **Table 6.3** tRIBS Model Spatial Output Files
+    **Table 8.3** tRIBS Model Spatial Output Files
 
             .. tabularcolumns::  |c|c|l|
 
@@ -55,7 +55,7 @@ With the exception of the mesh output files (**Table 6.1**), all output files de
 
     The location of the output files is specified in the tRIBS Model Input File using the keyword *OUTFILENAME*, which serves as the single base pathname for the spatial, hydrologic and outlet output. An important note to make is that the ``*.mrf``, ``*.rft`` and ``*.dat`` files produced by the model are labeled with additional identifiers before the extension that relate to the time of the output. For each *OPINTRVL* time step, the model will produce output of the ``*.mrf`` type, while the ``*.rft`` file is produced only after completion of the entire run. The spatial output (``*timestamp_00d``) are determined by the time step specified in the *SPOPINTRVL* keyword. Time-integrated spatial output (``*timestamp_00i``) is produced only at the end of the simulation. The model also produces various files with a ``*.pixel`` extension. The ``*.pixel`` files contain the dynamic variable output for a single node for all model times. The nodes for which ``*.pixel`` files are produced are specified through a Node Output List (``*.nol``) File, described below; the same file structure is used for the *OUTLETNODELIST* keyword to request interior ``*.qout`` streamflow output at specific nodes.
 
-    **Table 6.4** Node/Outlet Output List File Structure (``*.nol``)
+    **Table 8.4** Node/Outlet Output List File Structure (``*.nol``)
 
     Requested locations can be specified either by node ID or by coordinate; which mode applies is determined by the header row. ID-based (header ``ID``):
 
@@ -91,7 +91,7 @@ Time Series
 Basin Outlet Discharge Time Series
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 6.5** Content of *_Outlet.qout file, or *.qout file for interior nodes requested via OUTLETNODELIST
+  **Table 8.5** Content of *_Outlet.qout file, or *.qout file for interior nodes requested via OUTLETNODELIST
 
         .. tabularcolumns:: |c|c|c|c|
 
@@ -109,7 +109,7 @@ Basin Outlet Discharge Time Series
 Hydrologic Time Series at Selected TIN nodes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 6.6** Content of *.pixel files
+  **Table 8.6** Content of *.pixel files
 
         .. tabularcolumns:: |c|c|c|c|
 
@@ -284,7 +284,7 @@ Hydrologic Time Series at Selected TIN nodes
 Basin-averaged Hydrological Time Series
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 6.7** Content of *.mrf file
+  **Table 8.7** Content of *.mrf file
 
         .. tabularcolumns:: |c|c|c|c|
 
@@ -357,7 +357,7 @@ Basin-averaged Hydrological Time Series
 Basin-averaged Hydrological Time Series
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 6.8** Content for *.rft files
+  **Table 8.8** Content for *.rft files
 
         .. tabularcolumns:: |c|c|c|c|
 
@@ -382,7 +382,7 @@ Spatial Output
 Dynamic Spatial Output Tables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 6.9** Content of *timestamp_00d files
+  **Table 8.9** Content of *timestamp_00d files
 
   By default, all of the variables below are written to the dynamic spatial output files. The optional *DYNVARFILE* keyword (see :doc:`Model Input File`) points to a plain, CSV text file listing a subset of these variable names (Nwt,Mu,Mi,...), to reduce the number of columns written and the associated memory/disk cost; the *ID* column is always included regardless of selection. Names in *DYNVARFILE* must match the *Variable* column below exactly.
 
@@ -498,7 +498,7 @@ Dynamic Spatial Output Tables
 Time-integrated Spatial Output Table
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 6.10** Content of *timestamp_00i file
+  **Table 8.10** Content of *timestamp_00i file
 
         .. tabularcolumns:: |c|c|c|c|
 

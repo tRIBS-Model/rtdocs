@@ -1,12 +1,9 @@
-Model Parameters and Forcings
-==============================
+Model Parameters
+================
 
 A tRIBS model application consists of a series of Voronoi polygons that discretely represent a watershed. At each TIN node associated with a Voronoi polygon, a set of governing equations describing the hydrologic and energy processes are computed. To solve these equations for each location, spatially distributed data describing surface topography, soils, vegetation and hydrometeorology are required, which can be obtained from field measurements, remote sensing data interpretation or model output such as numerical weather models.
 
-All of the text-based parameter and forcing files described below: the soil and land-use reclassification tables, the station descriptor and data files, and the grid data files share a common CSV convention: a single required header row naming each column, followed by comma-separated values, with a column-count mismatch causing the model to exit with an error at startup. Past version of the model, each of these file types had its own bespoke layout (fixed-width fields, type/parameter-count header lines, etc.).
-
-Model Parameters
-------------------
+All of the text-based parameter files described below, the soil and land-use reclassification tables and the grid data files, share a common CSV convention: a single required header row naming each column, followed by comma-separated values, with a column-count mismatch causing the model to exit with an error at startup. In past versions of the model, each of these file types had its own bespoke layout (fixed-width fields, type/parameter-count header lines, etc.). The same convention applies to the hydrometeorological forcing files documented in :doc:`Model_Forcings`.
 
 In the case of soil and vegetation cover, different data sources can be used to assign uniform or spatially-explicit parameter values for the governing equations. The soils parameters listed in **Table 3.1** are necessary for carrying out the vertical infiltration and lateral flow redistribution, as well computing the soil heat budget within the sloped, heterogeneous, anisotropic soil columns assumed at each Voronoi polygon. Note that the parameter requirements vary with the specified hydrologic processes selected during a model run. For example, the surface heat parameters are only required if the radiation balance is computed. The order in which the soil parameters are listed in the tabular input should correspond to the list below and the units should match. Actual parameter names are not important for tabular input, whereas raster-based inputs assume slightly different naming conventions. Similar units need to be used when specifying soil parameters as raster inputs. 
 
@@ -81,7 +78,7 @@ The vegetation or land-use parameters in **Table 3.2** are necessary for carryin
 *RZD* (rootzone depth) is used to compute transpiration stress in odler versions this was hardcoded to 1 m. It does not change any physicial characteristic of the soil, it is the depth from the land surface used to compute soil mositure that is available to vegetation. A value of *9999.99* falls back to a default of 1 m. The model enforces *RZD* to be less that the depth to bedrock at each node.
 
 Input Formats
-~~~~~~~~~~~~~~
+-------------
 
 One form of data input for soil textural and vegetation data is through the use of ASCII grids consisting of soil or land use codes or indices. The soil and land use grids are specified in the Input File by using the keywords *SOILMAPNAME* and *LANDMAPNAME*. **Table 3.3** presents an example of a soil or land use grid. As with other grid input, care should be taken to specify the grids in the same coordinate system as the topographic TIN data. 
 
@@ -113,7 +110,7 @@ One form of data input for soil textural and vegetation data is through the use 
             |    0           |    0    |  -9999  |  -9999  |  -9999  |  -9999  |
             +----------------+---------+---------+---------+---------+---------+
 
-The parameter values for the soil and land use grids are read from a reclassification table inputted separately using the keywords *SOILTABLENAME* and *LANDTABLENAME*. The soil reclassification (``*.sdt``) and land use reclassification (``*.ldt``) tables are plain CSV files with a single required header row naming each column, as shown in **Table 3.4** and **Table 3.5**. The header row is followed by one line per cover type, with one comma-separated value per parameter. The order and units of these parameters are **fixed**; a column-count mismatch against the expected header causes the model to exit with an error at startup. Since parameter values outside the appropriate range may result in inaccurate calculations, the user should be careful to select realistic values from literature sources prior to model use.
+The parameter values for the soil and land use grids are read from a reclassification table inputted separately using the keywords *SOILTABLENAME* and *LANDTABLENAME*. The soil reclassification (``*.sdt``) and land use reclassification (``*.ldt``) tables are plain CSV files with a single required header row naming each column, as shown in **Table 3.4** and **Table 3.5**. The header row is followed by one line per cover type, with one comma-separated value per parameter. The order and units of these parameters are **fixed**; a column-count mismatch against the expected header causes the model to exit with an error at startup.
 
             **Table 3.4** Soil Reclassification Table Structure (``*.sdt``)
 
@@ -143,7 +140,7 @@ The parameter values for the soil and land use grids are read from a reclassific
 
                </div>
 
-Note that the soil parameters relate to the hydraulic and thermal properties in the upper portions of the soil profile. Most of these can be directly related to the surface soil texture. The first nine parameters are essential for running the Unsaturated Zone Model while the last two are required if the keyword *GFLUXOPTION = 1*. Note that these land use parameters relate to the interception and evaporation properties of the vegetative cover or land use type. The first parameter is required if *OPTINTERCEPT = 1*. The following parameters are required for various options of the keyword *OPTEVAPOTRANS*. :math:`\theta^*_s` and :math:`\theta^*_t` specify the soil moisture stress threshold for soil evaporation and plant transpiration in units of relative soil moisture (varying from 0 to 1). The final column, *RZD* (rootzone depth, m), falls back to a default of 1 m when set to *9999.99* (see **Table 3.2**). Land use tables created before this column existed will need it added, or the model will exit on a column-count mismatch.
+Note that the soil parameters relate to the hydraulic and thermal properties in the upper portions of the soil profile. Most of these can be directly related to the surface soil texture. The first nine parameters are essential for running the Unsaturated Zone Model while the last two are required if the keyword *GFLUXOPTION = 1*. Note that these land use parameters relate to the interception and evaporation properties of the vegetative cover or land use type. The first four parameters are related to the interception scheme (*OPTINTERCEPT = 1*). The following parameters are required for various options of the keyword *OPTEVAPOTRANS*. :math:`\theta^*_s` and :math:`\theta^*_t` specify the soil moisture stress threshold for soil evaporation and plant transpiration in units of relative soil moisture (varying from 0 to 1). The final column, *RZD* (rootzone depth, m), falls back to a default of 1 m when set to *9999.99* (see **Table 3.2**). Land use tables created before this column existed will need it added, or the model will exit on a column-count mismatch.
 
 Gridded soil data can be used as an alternative to the tabular soil parameter input. To activate the use of the gridded soil data the user must the keyword *OPTSOILTYPE = 1* in the Input File (``*.in``). If *OPTSOILTYPE = 0* then the use of the tabular data will be selected. The information is provided through the use of a text file for reading soil grid input (``*.gdf``) specified through the keyword *SCGRID*. The structure of the soil grid data file or GDF is shown in **Table 3.6**. 
 
@@ -177,7 +174,7 @@ Gridded soil data can be used as an alternative to the tabular soil parameter in
             | *SH*       |  *Grid File Pathname* | *Grid Extension* |
             +------------+-----------------------+------------------+
 
-An alternative input format type for dynamic land cover data is with the use of grid data. This option in the tRIBS model is used with the keyword *OPTLANDUSE = 1 or 2*, while the more table-based land cover is specified with *OPTLANDUSE = 0*. The use of dynamic land cover variables maybe convenient for inputting remotely sensed vegetation fields. Information is provided through a text file for reading in land cover grid input (``*.gdf``) as specified through the keyword *LUGRID* in the Input File. Note that when provided dynamic land cover grids not parameters are required, parameters not gridded can be provided in table. Most often when applying tRIBS users will only provide gridded land cover data for parameters they have detailed data of, from LiDAR for example. The structure of the Grid Data File or GDF is presented in **Table 3.7**.
+An alternative input format type for dynamic land cover data is with the use of grid data. This option in the tRIBS model is used with the keyword *OPTLANDUSE = 1 or 2*, while the more table-based land cover is specified with *OPTLANDUSE = 0*. The use of dynamic land cover variables maybe convenient for inputting remotely sensed vegetation fields. Information is provided through a text file for reading in land cover grid input (``*.gdf``) as specified through the keyword *LUGRID* in the Input File. Note that even when provideding dynamic land cover grids the land use map and table are still required. Any parameters not provided as gridded will be read from the land use table. Most often when applying tRIBS users will only provide gridded land cover data for parameters they have detailed data of, from LiDAR for example. The structure of the Grid Data File or GDF is presented in **Table 3.7**.
 
     **Table 3.7** Land Cover GDF File Structure
 
@@ -215,145 +212,17 @@ An alternative input format type for dynamic land cover data is with the use of 
 
 ``*.gdf`` files are CSV with a single header row (*Variable*, *BasePath*, *FileExtension*), one row per grid variable. Each row specifies the parameter code, the file pathname of the grid (including the basename of the file) and the extension given to the particular grid. The *NO_DATA* flag is used to specify the grids that are not available for a particular parameter.
 
-Model Forcings
+Optional Modules
 ----------------
 
-In the case of hydrometeorological forcings, model inputs can be achieved in two different ways: (1) point input of hydrometeorological observations or (2) grid input of meteorological observations or numerical model results. The model can handle the meteorological forcing in the point or grid format and has internal routines to assign this information to Voronoi polygons or TIN nodes via Thiessen resampling or nearest neighbor approaches.
-
-**Table 3.8** lists the hydrometeorological model forcings. The primary hydrometeorological parameter is rainfall at a specified temporal resolution, typically hourly. Sub-hourly forcing can be specified despite having no minute column, by simply providing the data in order using the same hour in the hour column. The requirement of the other meteorological parameters depends on the processes selected for the model run. Humidity is specified via relative humidity (*RH*) only; dew point temperature and vapor pressure are not accepted as input and are computed internally from *RH*. Prior to v6.0.0 surface temperature (*TS*) could be left out of the input, now this value is required but if not available should be set to 9999.99. Cloud cover (*XC*) and surface temperature (*TS*) are not commonly provided inputs as tRIBS will compute these internally but the option is available if the data exists.
-
-        **Table 3.8** tRIBS Hydrometeorological Parameter Description
-
-        .. tabularcolumns:: |c|c|c|
-
-        +--------------------+-----------------------------------------------+--------------------+
-        |  **Parameter**     |  **Description**                              |  **Unit**          |
-        +--------------------+-----------------------------------------------+--------------------+
-        |  *PA*              |  Atmospheric Pressure                         |  [mb]              |
-        +--------------------+-----------------------------------------------+--------------------+
-        |  *RH*              |  Relative Humidity                            |  [%]               |
-        +--------------------+-----------------------------------------------+--------------------+
-        |  *XC*              |  Sky Cover                                    |  [tenths] (0 to 10)|
-        +--------------------+-----------------------------------------------+--------------------+
-        |  *US*              |  Wind Speed                                   |  [m/s]             |
-        +--------------------+-----------------------------------------------+--------------------+
-        |  *TA*              |  Air Temperature                              |  [C]               |
-        +--------------------+-----------------------------------------------+--------------------+
-        |  *TS*              |  Surface Temperature                          |  [C]               |
-        +--------------------+-----------------------------------------------+--------------------+
-        |  *R*               |  Rainfall                                     |  [mm/hr]           |
-        +--------------------+-----------------------------------------------+--------------------+
-        |  *IS*              |  Incoming Solar Radiation                     |  [W/m2]            |
-        +--------------------+-----------------------------------------------+--------------------+
-
-Input Formats
-~~~~~~~~~~~~~~
-
-Meteorological input into tRIBS can from point data or grid data, depending on the data sources available. The two data inputs are treated differently in the model. **Table 3.9** shows the two forms of meteorological data input and storage.
-
-            **Table 3.9** Meteorological Data Input Methods
-
-            .. tabularcolumns:: |c|c|c|
-
-            +--------------+--------------------------------------+-----------------------------------------------+
-            |Characteristic|  Point Data                          |  Grid Data                                    |
-            +==============+======================================+===============================================+
-            |  *Input*     |*Station Descriptor File* (``*.sdf``) |*ASCII grids* (``*.txt``, ``*.lan``, ``*.soi``)|
-            +--------------+--------------------------------------+-----------------------------------------------+
-            |              |*Meteorological Data File* (``*.mdf``)|                                               |
-            +--------------+--------------------------------------+-----------------------------------------------+
-            | *Storage*    | *Assignment to storage objects*      | *Direct assignment to* ``tCNode``             |
-            +--------------+--------------------------------------+-----------------------------------------------+
-            |*Manipulation*|*Thiessen point resampling*           | *Grid resampling*                             |
-            +--------------+--------------------------------------+-----------------------------------------------+
-            | *Examples*   | ``tHydroMet``, ``tRainGauge``        | ``tRainfall``, ``tVariant``, ``tInvariant``   |
-            +--------------+--------------------------------------+-----------------------------------------------+
-
-The Station Descriptor Files (``*.sdf``) and Meteorological Data Files (``*.mdf``) are plain CSV files with a single required header row. Both weather station and rain gauge SDFs share the same five-column structure (**Table 3.10**).
-
-        **Table 3.10.** Weather Station / Rain Gauge SDF Structure
-
-        .. tabularcolumns::     |c|c|c|c|c|
-
-        +------+---------------------------+------------+-----------+-------------+
-        | *ID* | *DataFile*                | *Northing* | *Easting* | *Elevation* |
-        +------+---------------------------+------------+-----------+-------------+
-        | 1    | /data/met/station1.mdf    | ...        | ...       | ...         |
-        +------+---------------------------+------------+-----------+-------------+
-
-Note the following: *ID* must be a unique value for each station (starting at 1), *DataFile* is the MDF file path for that station (relative to the location of of the directory where the model was executed), and *Northing*/*Easting* must be in the same coordinate system as the input grids and watershed TIN.
-
-           **Table 3.11** Weather Station MDF Structure
-
-            .. tabularcolumns::  |c|c|c|c|c|c|c|c|c|c|c|
-
-            +--------+---------+-------+--------+---------+----------+-------------+----------+--------+-----------+--------+
-            | *Year* | *Month* | *Day* | *Hour* | *PA_mb* | *RH_pct* | *XC_tenths* | *US_m/s* | *TA_C* | *IS_W/m2* | *TS_C* |
-            +--------+---------+-------+--------+---------+----------+-------------+----------+--------+-----------+--------+
-            | ...    | ...     | ...   | ...    | ...     | ...      | ...         | ...      | ...    | ...       | ...    |
-            +--------+---------+-------+--------+---------+----------+-------------+----------+--------+-----------+--------+
-
-The Weather Station MDF has exactly 11 columns.
-
-           **Table 3.12** Rain Gauge MDF Structure
-
-            .. tabularcolumns::  |c|c|c|c|c|
-
-            +--------+---------+-------+--------+--------------+
-            | *Year* | *Month* | *Day* | *Hour* | *Rain_mm/hr* |
-            +--------+---------+-------+--------+--------------+
-            | ...    | ...     | ...   | ...    | ...          |
-            +--------+---------+-------+--------+--------------+
-
-           **Table 3.13** Direct/External ET Input MDF Structure (used when *OPTEVAPOTRANS = 2*)
-
-            .. tabularcolumns::  |c|c|c|c|c|
-
-            +--------+---------+-------+--------+------------+
-            | *Year* | *Month* | *Day* | *Hour* | *ET_mm/hr* |
-            +--------+---------+-------+--------+------------+
-            | ...    | ...     | ...   | ...    | ...        |
-            +--------+---------+-------+--------+------------+
-
-Note the following for all MDF files: the parameter names must be placed in the header row, there must be one row per timestep following the header, missing data must be inputted with the *NO_DATA* flag *= 9999.99* (interpolated internally), and units must be retained as indicated. A column-count mismatch against the expected header causes the model to exit with an error at startup. Notice that the file does not contain a minute column. Nevertheless, sub-hourly data can be inputted into the model at intervals that are multiples of the *TIMESTEP*. For example, for 15-minute data, the user should specify four rows for each hour (same *Hour*) in order. A similar approach is taken for sub-hourly rain gauge data.
-
-An alternative input format type for meteorological data is with the use of grid data. This option in the tRIBS model is used with the keyword *METDATAOPTION = 2*, while the more traditional weather station data is specified with *METDATAOPTION = 1*.  The additional information is provided through a text file for reading in meteorological input (``*.gdf``) as specified through the keyword *HYDROMETGRID* in the Input File. The structure of the Grid Data File or GDF is presented in **Table 3.14**.
-
-           **Table 3.14** Meteorological GDF File Structure
-
-            .. tabularcolumns:: |c|c|c|
-
-            +------------+--------------------+-----------------+
-            | *Variable* | *BasePath*         | *FileExtension* |
-            +------------+--------------------+-----------------+
-            | PA         | Grid File Pathname | Grid Extension  |
-            +------------+--------------------+-----------------+
-            | RH         | Grid File Pathname | Grid Extension  |
-            +------------+--------------------+-----------------+
-            | XC         | Grid File Pathname | Grid Extension  |
-            +------------+--------------------+-----------------+
-            | US         | Grid File Pathname | Grid Extension  |
-            +------------+--------------------+-----------------+
-            | TA         | Grid File Pathname | Grid Extension  |
-            +------------+--------------------+-----------------+
-            | IS         | NO_DATA            | NO_DATA         |
-            +------------+--------------------+-----------------+
-            | TS         | NO_DATA            | NO_DATA         |
-            +------------+--------------------+-----------------+
-
-As with the soil and land-use GDFs (**Tables 3.6, 3.7**), this file is CSV with a single header row (*Variable*, *BasePath*, *FileExtension*). The *NO_DATA* flag is used to specify that weather grids are not available for a particular parameter. All the keywords used to represent the parameters are fixed as well as the units.
-
-Optional Modules
-------------------
-
-Beyond the core soil, land-use and hydrometeorological inputs above, tRIBS supports a small set of optional parameter files that extend model behavior. Each falls back to a documented default when its keyword is absent, so omitting them reproduces the model's baseline behavior.
+Beyond the core soil, and land-use inputs above, tRIBS supports a small set of optional parameter files that extend model behavior. Each falls back to a documented default when its keyword is absent, so omitting them reproduces the model's baseline behavior.
 
 Snow Parameters
 ~~~~~~~~~~~~~~~~~~
 
-When the single-layer energy-balance snow module is active (*OPTSNOW = 1*), the optional snow parameter file (``*.spf``, keyword *SNOWFILENAME*) exposes a set of physical parameters that were previously hardcoded. The file uses the same keyword/value format as the Model Input File (``*.in``): a line of descriptive text followed by the parameter value on the next line. All parameters are optional and fall back to the defaults in **Table 3.15** if the file is omitted.
+When the single-layer energy-balance snow module is active (*OPTSNOW = 1*), the optional snow parameter file (``*.spf``, keyword *SNOWFILENAME*) exposes a set of physical parameters that were previously hardcoded. The file uses the same keyword/value format as the Model Input File (``*.in``): a line of descriptive text followed by the parameter value on the next line. All parameters are optional and fall back to the defaults in **Table 3.8** if the file is omitted.
 
-        **Table 3.15** tRIBS Snow Parameter File (``*.spf``) Structure
+        **Table 3.8** tRIBS Snow Parameter File (``*.spf``) Structure
 
         .. tabularcolumns:: |c|c|c|c|
 
@@ -400,7 +269,7 @@ Monthly Stomatal Resistance Scaling
 
 The optional *RSPARAMFILE* keyword (see :doc:`Model Input File`) points to a CSV file that scales the minimum stomatal resistance (*Rs*, **Table 3.2**) by month, on top of the model's built-in diurnal scaling, following `(Becerra, 2026)`_. The file consists of a single header row (skipped by the model) followed by one row of 12 comma-separated monthly multipliers, in order from January to December.
 
-        **Table 3.16** Monthly Stomatal Resistance Scaling File Structure
+        **Table 3.9** Monthly Stomatal Resistance Scaling File Structure
 
         .. tabularcolumns:: |c|c|c|c|c|c|c|c|c|c|c|c|
 
@@ -413,4 +282,3 @@ The optional *RSPARAMFILE* keyword (see :doc:`Model Input File`) points to a CSV
 If *RSPARAMFILE* is absent, all 12 monthly factors default to 1.0 (no seasonal scaling). The model exits with an error if the file is missing, unopenable, or does not contain exactly 12 values.
 
 .. _(Becerra, 2026): https://hdl.handle.net/2286/R.2.N.204771
-
