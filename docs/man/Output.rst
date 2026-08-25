@@ -1,9 +1,11 @@
 Model Outputs
 ==================================
 
-The tRIBS Model produces a number of output files that represent the time series or the spatial distribution of model state or output variables. Output variables include the position of moisture fronts in the unsaturated zone, water table elevation, surface runoff, subsurface flux, rainfall rate, interception loss, evapotranspiration, and information on the mesh triangulation. **Table 6.1**, **Table 6.2**, and **Table 6.3** summarize: (1) mesh output files, (2) time series outputs, and (3) spatial outputs. More detailed descriptions of the individual files are provided in the following sections.
+The tRIBS Model produces a number of output files that represent the time series or the spatial distribution of model state or output variables. Output variables include the position of moisture fronts in the unsaturated zone, water table elevation, surface runoff, subsurface flux, rainfall rate, interception loss, evapotranspiration, and information on the mesh triangulation. **Table 8.1**, **Table 8.2**, and **Table 8.3** summarize: (1) mesh output files, (2) time series outputs, and (3) spatial outputs. More detailed descriptions of the individual files are provided in the following sections.
 
-    **Table 6.1** tRIBS Mesh Output Files
+With the exception of the mesh output files (**Table 8.1**), all output files described on this page are CSV with a single header row; each column header combines the variable name and its units.
+
+    **Table 8.1** tRIBS Mesh Output Files
 
             .. tabularcolumns::  |c|c|l|
 
@@ -22,7 +24,7 @@ The tRIBS Model produces a number of output files that represent the time series
             |*Mesh Voronoi Geometry*       | ``*_voi``        |  File containing individual Voronoi polygon geometry.          |
             +------------------------------+------------------+----------------------------------------------------------------+
 
-    **Table 6.2** tRIBS Model Time Series Files
+    **Table 8.2** tRIBS Model Time Series Files
 
             .. tabularcolumns::  |c|c|l|
 
@@ -39,7 +41,7 @@ The tRIBS Model produces a number of output files that represent the time series
             |*Node Dynamic Output File*    |  ``*.pixel``     | Time series of dynamic variables for a specific node.          |
             +------------------------------+------------------+----------------------------------------------------------------+
 
-    **Table 6.3** tRIBS Model Spatial Output Files
+    **Table 8.3** tRIBS Model Spatial Output Files
 
             .. tabularcolumns::  |c|c|l|
 
@@ -51,24 +53,37 @@ The tRIBS Model produces a number of output files that represent the time series
             |*Mesh Integrated Output File* |``*timestamp_00i``|  Time-integrated variable output for all mesh nodes.           |
             +------------------------------+------------------+----------------------------------------------------------------+
 
-    The location of the output files is specified in the tRIBS Model Input File by using the keywords *OUTFILENAME* and *OUTHYDROFILENAME*. An important note to make is that the ``*.mrf``, ``*.rft`` and ``*.dat`` files produced by the model are labeled with additional identifiers before the extension that relate to the time of the output. For each *OPINTRVL* time step, the model will produce output of the ``*.mrf`` type, while the ``*.rft`` file is produced only after completion of the entire run. The spatial output (``*timestamp_00d``) are determined by the time step specified in the *SPOPINTRVL* keyword. Time-integrated spatial output (``*timestamp_00i``) is produced only at the end of the simulation. The model also produces various files with a ``*.pixel`` extension followed by a node ID number at the end of the run. The ``*.pixel#`` files contain the dynamic variable output for a single node for all model times. The number of ``*.pixel#`` files produced is specified through a Node Output List (``*.nol``) File described below.
+    The location of the output files is specified in the tRIBS Model Input File using the keyword *OUTFILENAME*, which serves as the single base pathname for the spatial, hydrologic and outlet output. An important note to make is that the ``*.mrf``, ``*.rft`` and ``*.dat`` files produced by the model are labeled with additional identifiers before the extension that relate to the time of the output. For each *OPINTRVL* time step, the model will produce output of the ``*.mrf`` type, while the ``*.rft`` file is produced only after completion of the entire run. The spatial output (``*timestamp_00d``) are determined by the time step specified in the *SPOPINTRVL* keyword. Time-integrated spatial output (``*timestamp_00i``) is produced only at the end of the simulation. The model also produces various files with a ``*.pixel`` extension. The ``*.pixel`` files contain the dynamic variable output for a single node for all model times. The nodes for which ``*.pixel`` files are produced are specified through a Node Output List (``*.nol``) File, described below; the same file structure is used for the *OUTLETNODELIST* keyword to request interior ``*.qout`` streamflow output at specific nodes.
 
-    **Table 6.4** Node Output List File Structure
+    **Table 8.4** Node/Outlet Output List File Structure (``*.nol``)
+
+    Requested locations can be specified either by node ID or by coordinate; which mode applies is determined by the header row. ID-based (header ``ID``):
 
             .. tabularcolumns:: |c|
 
-            +-----------+
-            | *#Nodes*  |
-            +-----------+
-            | *NodeID 1*|
-            +-----------+
-            | *...*     |
-            +-----------+
-            | *NodeID n*|
-            +-----------+
+            +--------+
+            | *ID*   |
+            +--------+
+            | 105    |
+            +--------+
+            | 250    |
+            +--------+
+            | 407    |
+            +--------+
 
+    Coordinate-based (header ``X,Y``):
 
-    A similar structure and file is used for the keyword *HYDRONODELIST* and *OUTLETNODELIST*. Using this file, allows the user to obtain the runtime hydrologic information in the unsaturated and saturated model for each time step as output to the screen, a useful tool for debugging. No filename suppresses the debugging information.
+            .. tabularcolumns:: |c|c|
+
+            +-------------+-------------+
+            | *X*         | *Y*         |
+            +-------------+-------------+
+            | 456000.0    | 3688978.5   |
+            +-------------+-------------+
+            | 457500.0    | 3689200.0   |
+            +-------------+-------------+
+
+    Both files are CSV with a single header-flag first line and no leading count line; every row after the header is read. Coordinates must be given in the same x/y projection as the mesh, not latitude/longitude, and are resolved at read time to the nearest eligible mesh node. *NODEOUTPUTLIST* resolves to the nearest active computational node, while *OUTLETNODELIST* is restricted to the channel network. The resolved node ID is then used for file naming like in the ID-based path, so the contents and column layout of ``*.pixel`` and ``*.qout`` are unchanged; only how the locations are requested has changed. The resolved snap distance is printed as a diagnostic for every coordinate, and the model warns (without stopping the run) if a coordinate falls outside the domain, or, for outlet requests, if the nearest stream node is much farther away than the nearest node of any type, a sign the coordinate isn't actually on the channel.
 
 Time Series
 -----------
@@ -76,314 +91,290 @@ Time Series
 Basin Outlet Discharge Time Series
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 6.5** Content of *_Outlet.qout file or *qout file if Voronoi IDs are provided via OUTLETNODELIST
+  **Table 8.5** Content of ``*_Outlet.qout`` file, or ``*.qout`` file for interior nodes requested via OUTLETNODELIST
 
-        .. tabularcolumns:: |c|c|c|
+        .. tabularcolumns:: |c|c|c|c|
 
-        +-------+-------------------+--------+
-        | Column| Description       | Units  |
-        +=======+===================+========+
-        | 1     | Time              | [hr]   |
-        +-------+-------------------+--------+
-        | 2     | Discharge, Qstrm  |[m3/s]  |
-        +-------+-------------------+--------+
-        | 3     | Channel stage,    | [m]    |
-        |       | HLevel            |        |
-        +-------+-------------------+--------+
+        +--------+------------+---------------+--------+
+        | Column | Variable   | Description   | Units  |
+        +--------+------------+---------------+--------+
+        | 1      | Time_hr    | Time          | [hr]   |
+        +--------+------------+---------------+--------+
+        | 2      | Qstrm_m3_s | Discharge     | [m3/s] |
+        +--------+------------+---------------+--------+
+        | 3      | Hlev_m     | Channel Stage | [m]    |
+        +--------+------------+---------------+--------+
+
 
 Hydrologic Time Series at Selected TIN nodes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 6.6** Content of *.pixel files
+  **Table 8.6** Content of ``*.pixel`` files
 
-        .. tabularcolumns:: |c|c|c|
+        .. tabularcolumns:: |c|c|c|c|
 
-        +-------+--------------------------------------------+--------+
-        | Column| Description                                | Units  |
-        +=======+============================================+========+
-        | 1     | Node Identification, ID                    | [id]   |
-        +-------+--------------------------------------------+--------+
-        | 2     | Time                                       | [hr]   |
-        +-------+--------------------------------------------+--------+
-        | 3     | Depth to groundwater table, Nwt            | [mm]   |
-        +-------+--------------------------------------------+--------+
-        | 4     | Wetting front depth, Nf                    | [mm]   |
-        +-------+--------------------------------------------+--------+
-        | 5     | Top front depth, Nt                        | [mm]   |
-        +-------+--------------------------------------------+--------+
-        | 6     | Total moisture above the water table, Mu   | [mm]   |
-        +-------+--------------------------------------------+--------+
-        | 7     | Moisture content in the initialization     | [mm]   |
-        |       | profile, Mi                                |        |
-        +-------+--------------------------------------------+--------+
-        | 8     | Unsaturated lateral flow out from cell,    | [mm/hr]|
-        |       | Qpout                                      |        |
-        +-------+--------------------------------------------+--------+
-        | 9     | Unsaturated lateral flow into cell, Qpin   | [mm/hr]|
-        +-------+--------------------------------------------+--------+
-        | 10    | Transmissivity, Trnsm                      | [m²/hr]|
-        +-------+--------------------------------------------+--------+
-        | 11    | Groundwater flux, GWflx                    | [m³/hr]|
-        +-------+--------------------------------------------+--------+
-        | 12    | Surface Runoff, Srf                        | [mm]   |
-        +-------+--------------------------------------------+--------+
-        | 13    | Rainfall, Rain                             | [mm/hr]|
-        +-------+--------------------------------------------+--------+
-        | 14    | Soil Moisture, top 10 cm, SoilMoist        | [ ]    |
-        +-------+--------------------------------------------+--------+
-        | 15    | Root Zone Moisture, top 1 m, RootMoist     | [ ]    |
-        +-------+--------------------------------------------+--------+
-        | 16    | Air Temperature, AirT                      | [°C]   |
-        +-------+--------------------------------------------+--------+
-        | 17    | Dew Point Temperature, DewT                | [°C]   |
-        +-------+--------------------------------------------+--------+
-        | 18    | Surface Temperature, SurfT                 | [°C]   |
-        +-------+--------------------------------------------+--------+
-        | 19    | Soil Temperature, SoilT                    | [°C]   |
-        +-------+--------------------------------------------+--------+
-        | 20    | Atmospheric Pressure, Press                | [Pa]   |
-        +-------+--------------------------------------------+--------+
-        | 21    | Relative Humidity, RelHum                  | [ ]    |
-        +-------+--------------------------------------------+--------+
-        | 22    | Sky Cover, SkyCov                          | [ ]    |
-        +-------+--------------------------------------------+--------+
-        | 23    | Wind Speed, Wind                           | [m/s]  |
-        +-------+--------------------------------------------+--------+
-        | 24    | Net Radiation, NetRad                      | [W/m²] |
-        +-------+--------------------------------------------+--------+
-        | 25    | Incoming Shortwave Radiation, ShrtRadIn    | [W/m²] |
-        +-------+--------------------------------------------+--------+
-        | 26    | Incoming Shortwave Radiation to the Sloped | [W/m²] |
-        |       | Surface, ShrtRadInslope                    |        |
-        +-------+--------------------------------------------+--------+
-        | 27    | Incoming Direct Shortwave Radiation,       | [W/m²] |
-        |       | ShrtRadIn_dir                              |        |
-        +-------+--------------------------------------------+--------+
-        | 28    | Incoming Diffuse Shortwave Radiation,      | [W/m²] |
-        |       | ShrtRadIn_dif                              |        |
-        +-------+--------------------------------------------+--------+
-        | 29    | Shortwave Absorbed Radiation, Vegetation,  | [W/m²] |
-        |       | ShortAbsbVeg                               |        |
-        +-------+--------------------------------------------+--------+
-        | 30    | Shortwave Absorbed Radiation, Soil,        | [W/m²] |
-        |       | ShortAbsbSoi                               |        |
-        +-------+--------------------------------------------+--------+
-        | 31    | Incoming Longwave Radiation, LngRadIn      | [W/m²] |
-        +-------+--------------------------------------------+--------+
-        | 32    | Outgoing Longwave Radiation, LngRadOut     | [W/m²] |
-        +-------+--------------------------------------------+--------+
-        | 33    | Potential Evaporation, PotEvp              | [mm/hr]|
-        +-------+--------------------------------------------+--------+
-        | 34    | Actual Evaporation, ActEvp                 | [mm/hr]|
-        +-------+--------------------------------------------+--------+
-        | 35    | Total Evapotranspiration, EvpTtrs          | [mm/hr]|
-        +-------+--------------------------------------------+--------+
-        | 36    | Evaporation from Wet Canopy, EvpWetCan     | [mm/hr]|
-        +-------+--------------------------------------------+--------+
-        | 37    | Evaporation from Dry Canopy,               | [mm/hr]|
-        |       | EvpDryCan                                  |        |
-        +-------+--------------------------------------------+--------+
-        | 38    | Evaporation from Bare Soil, EvpSoil        | [mm/hr]|
-        +-------+--------------------------------------------+--------+
-        | 39    | Ground Heat Flux, Gflux                    | [W/m²] |
-        +-------+--------------------------------------------+--------+
-        | 40    | Sensible Heat Flux, Hflux                  | [W/m²] |
-        +-------+--------------------------------------------+--------+
-        | 41    | Latent Heat Flux, Lflux                    | [W/m²] |
-        +-------+--------------------------------------------+--------+
-        | 42    | Net Precipitation, NetPrecip               | [mm/hr]|
-        +-------+--------------------------------------------+--------+
-        | 43    | Liquid Water Equivalent, LiqWE             | [cm]   |
-        +-------+--------------------------------------------+--------+
-        | 44    | Ice Water Equivalent, IceWE                | [cm]   |
-        +-------+--------------------------------------------+--------+
-        | 45    | Snow Water Equivalent, SnWE                | [cm]   |
-        +-------+--------------------------------------------+--------+
-        | 46    | Sublimation from Snowpack, SnSub           | [cm]   |
-        +-------+--------------------------------------------+--------+
-        | 47    | Evaporation from Snowpack, SnEvap          | [cm]   |
-        +-------+--------------------------------------------+--------+
-        | 48    | Internal Energy of Snow Pack, U            | [kJ/m²]|
-        +-------+--------------------------------------------+--------+
-        | 49    | Routed Melt Water Equivalent, RouteWE      | [cm]   |
-        +-------+--------------------------------------------+--------+
-        | 50    | Snow Temperature, SnTemp                   | [°C]   |
-        +-------+--------------------------------------------+--------+
-        | 51    | Snow Surface Age, SurfAge                  | [hr]   |
-        +-------+--------------------------------------------+--------+
-        | 52    | Change in Snow Pack Internal Energy, DU    | [kJ/m²]|
-        +-------+--------------------------------------------+--------+
-        | 53    | Latent Heat Flux from Snow Cover, snLHF    | [kJ/m²]|
-        +-------+--------------------------------------------+--------+
-        | 54    | Sensible Heat Flux from Snow Cover, snSHF  | [kJ/m²]|
-        +-------+--------------------------------------------+--------+
-        | 55    | Ground Heat Flux from Snow Cover, snGHF    | [kJ/m²]|
-        +-------+--------------------------------------------+--------+
-        | 56    | Precip Heat Flux from Snow Cover, snPHF    | [kJ/m²]|
-        +-------+--------------------------------------------+--------+
-        | 57    | Outgoing Longw. Rad. from Snow, snRLout    | [kJ/m²]|
-        +-------+--------------------------------------------+--------+
-        | 58    | Incom. Longw. Radn. from Snow, snRLin      | [kJ/m²]|
-        +-------+--------------------------------------------+--------+
-        | 59    | Incom. Shortw. Radn. from Snow, snRSin     | [kJ/m²]|
-        +-------+--------------------------------------------+--------+
-        | 60    | Error in Energy Balance, Uerror            | [kJ/m²]|
-        +-------+--------------------------------------------+--------+
-        | 61    | Intercepted Snow Water Equivalent, intSWEq | [cm]   |
-        +-------+--------------------------------------------+--------+
-        | 62    | Sublim. Snow Water Equiv. from Canopy,     | [cm]   |
-        |       | intSub                                     |        |
-        +-------+--------------------------------------------+--------+
-        | 63    | Unloaded SWE from Canopy, intSnUnload      | [cm]   |
-        +-------+--------------------------------------------+--------+
-        | 64    | Canopy Storage, CanStorage                 | [mm]   |
-        +-------+--------------------------------------------+--------+
-        | 65    | Cumulative Interception, CumIntercept      | [mm]   |
-        +-------+--------------------------------------------+--------+
-        | 66    | Interception, Interception                 | [mm]   |
-        +-------+--------------------------------------------+--------+
-        | 67    | Recharge, Recharge                         | [mm/hr]|
-        +-------+--------------------------------------------+--------+
-        | 68    | Runon, RunOn                               | [mm]   |
-        +-------+--------------------------------------------+--------+
-        | 69    | Surface Runoff in Hour, srf_Hour           | [mm]   |
-        +-------+--------------------------------------------+--------+
-        | 70    | Discharge, Qstrm                           | [m³/s] |
-        +-------+--------------------------------------------+--------+
-        | 71    | Channel Stage, Hlevel                      | [m]    |
-        +-------+--------------------------------------------+--------+
-        | 72    | Canopy Storage Parameter, CanStorParam     | [mm]   |
-        +-------+--------------------------------------------+--------+
-        | 73    | Interception Coefficient, IntercepCoeff    | [ ]    |
-        +-------+--------------------------------------------+--------+
-        | 74    | Free Throughfall Coeff.- Rutter,           | [ ]    |
-        |       | ThroughFall                                |        |
-        +-------+--------------------------------------------+--------+
-        | 75    | Canopy Field Capacity – Rutter, CanFieldCap| [mm]   |
-        +-------+--------------------------------------------+--------+
-        | 76    | Drainage coefficient – Rutter, DrainCoeff  | [mm/hr]|
-        +-------+--------------------------------------------+--------+
-        | 77    | Drainage Expon. Param. – Rutter,           | [mm⁻¹] |
-        |       | DrainExpPar                                |        |
-        +-------+--------------------------------------------+--------+
-        | 78    | Albedo, LandUseAlb                         | [ ]    |
-        +-------+--------------------------------------------+--------+
-        | 79    | Vegetation Height , VegHeight              | [m]    |
-        +-------+--------------------------------------------+--------+
-        | 80    | Optical Transmission Coeff., OptTransmCoeff| [ ]    |
-        +-------+--------------------------------------------+--------+
-        | 81    | Canopy- Average Stomatal Resistance,       | [s/m]  |
-        |       | StomRes                                    |        |
-        +-------+--------------------------------------------+--------+
-        | 82    | Vegetation Fraction, VegFraction           | [ ]    |
-        +-------+--------------------------------------------+--------+
-        | 83    | Canopy Leaf Area Index, LeafAI             | [ ]    |
-        +-------+--------------------------------------------+--------+
+        +--------+----------------------+----------------------------------------------------+---------+
+        | Column | Variable             | Description                                        | Units   |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 1      | NodeID               | Node Identification                                | [id]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 2      | Time_hr              | Time                                               | [hr]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 3      | Nwt_mm               | Depth to groundwater table                         | [mm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 4      | Nf_mm                | Wetting front depth                                | [mm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 5      | Nt_mm                | Top front depth                                    | [mm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 6      | Mu_mm                | Total moisture above the water table               | [mm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 7      | Mi_mm                | Moisture content in the initialization profile     | [mm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 8      | QpOut_mm_h           | Unsaturated lateral flow out from cell             | [mm/hr] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 9      | QpIn_mm_h            | Unsaturated lateral flow into cell                 | [mm/hr] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 10     | Trnsm_m2_h           | Transmissivity                                     | [m2/hr] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 11     | GWflx_m3_h           | Groundwater flux                                   | [m3/hr] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 12     | Srf_Hour_mm          | Surface Runoff (hourly)                            | [mm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 13     | Rain_mm_h            | Rainfall                                           | [mm/hr] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 14     | SoilMoist_[]         | Soil Moisture, top 10 cm                           | [-]     |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 15     | RootMoist_[]         | Root Zone Moisture, top 1 m                        | [-]     |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 16     | AirT_oC              | Air Temperature                                    | [C]     |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 17     | DewT_oC              | Dew Point Temperature                              | [C]     |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 18     | SurfT_oC             | Surface Temperature                                | [C]     |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 19     | SoilT_oC             | Soil Temperature                                   | [C]     |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 20     | Press_Pa             | Atmospheric Pressure                               | [Pa]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 21     | RelHum_[]            | Relative Humidity                                  | [-]     |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 22     | SkyCov_[]            | Sky Cover                                          | [-]     |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 23     | Wind_m_s             | Wind Speed                                         | [m/s]   |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 24     | NetRad_W_m2          | Net Radiation                                      | [W/m2]  |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 25     | ShrtRadIn_W_m2       | Incoming Shortwave Radiation                       | [W/m2]  |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 26     | ShortRadInSlope_W_m2 | Incoming Shortwave Radiation to the Sloped Surface | [W/m2]  |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 27     | ShrtRadIn_dir_W_m2   | Incoming Direct Shortwave Radiation                | [W/m2]  |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 28     | ShrtRadIn_dif_W_m2   | Incoming Diffuse Shortwave Radiation               | [W/m2]  |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 29     | ShortAbsbVeg_W_m2    | Shortwave Absorbed Radiation, Vegetation           | [W/m2]  |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 30     | ShortAbsbSoi_W_m2    | Shortwave Absorbed Radiation, Soil                 | [W/m2]  |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 31     | LngRadIn_W_m2        | Incoming Longwave Radiation                        | [W/m2]  |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 32     | LngRadOut_W_m2       | Outgoing Longwave Radiation                        | [W/m2]  |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 33     | PotEvp_mm_h          | Potential Evaporation                              | [mm/hr] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 34     | EvpTtrs_mm_h         | Total Evapotranspiration                           | [mm/hr] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 35     | EvpWetCan_mm_h       | Evaporation from Wet Canopy                        | [mm/hr] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 36     | TransDryCan_mm_h     | Evaporation from Dry Canopy                        | [mm/hr] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 37     | EvpSoil_mm_h         | Evaporation from Bare Soil                         | [mm/hr] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 38     | Gflux_W_m2           | Ground Heat Flux                                   | [W/m2]  |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 39     | HFlux_W_m2           | Sensible Heat Flux                                 | [W/m2]  |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 40     | Lflux_W_m2           | Latent Heat Flux                                   | [W/m2]  |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 41     | NetPrecip_mm_hr      | Net Precipitation                                  | [mm/hr] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 42     | LiqWE_cm             | Liquid Water Equivalent                            | [cm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 43     | IceWE_cm             | Ice Water Equivalent                               | [cm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 44     | SnWE_cm              | Snow Water Equivalent                              | [cm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 45     | SnSub_cm             | Sublimation from Snowpack                          | [cm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 46     | SnEvap_cm            | Evaporation from Snowpack                          | [cm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 47     | U_kJ_m2              | Internal Energy of Snow Pack                       | [kJ/m2] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 48     | RouteWE_cm           | Routed Melt Water Equivalent                       | [cm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 49     | SnTemp_C             | Snow Temperature                                   | [C]     |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 50     | SurfAge_h            | Snow Surface Age                                   | [hr]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 51     | SnDepth_cm           | Snow Depth                                         | [cm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 52     | SnDensity_kg_m3      | Snow Density                                       | [kg/m3] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 53     | DU_kJ_m2             | Change in Snow Pack Internal Energy                | [kJ/m2] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 54     | snLHF_kJ_m2          | Latent Heat Flux from Snow Cover                   | [kJ/m2] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 55     | snSHF_kJ_m2          | Sensible Heat Flux from Snow Cover                 | [kJ/m2] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 56     | snGHF_kJ_m2          | Ground Heat Flux from Snow Cover                   | [kJ/m2] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 57     | snPHF_kJ_m2          | Precip Heat Flux from Snow Cover                   | [kJ/m2] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 58     | snRLout_kJ_m2        | Outgoing Longwave Radiation from Snow              | [kJ/m2] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 59     | snRLin_kJ_m2         | Incoming Longwave Radiation from Snow              | [kJ/m2] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 60     | snRSin_kJ_m2         | Incoming Shortwave Radiation from Snow             | [kJ/m2] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 61     | Uerror_kJ_m2         | Error in Energy Balance                            | [kJ/m2] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 62     | IntSWEq_cm           | Intercepted Snow Water Equivalent                  | [cm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 63     | IntSub_cm            | Sublimated Snow Water Equivalent from Canopy       | [cm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 64     | IntSnUnload_cm       | Unloaded Snow Water Equivalent from Canopy         | [cm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 65     | CanStorage_mm        | Canopy Storage                                     | [mm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 66     | CumIntercept_mm      | Cumulative Interception                            | [mm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 67     | Interception_mm      | Interception                                       | [mm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 68     | Recharge_mm/hr       | Recharge                                           | [mm/hr] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 69     | RunOn_mm             | Runon                                              | [mm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 70     | Qstrm_m3_s           | Discharge                                          | [m3/s]  |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 71     | Hlevel_m             | Channel Stage                                      | [m]     |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 72     | ThroughFall_[]       | Free Throughfall Coefficient - Rutter              | [-]     |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 73     | CanFieldCap_mm       | Canopy Field Capacity - Rutter                     | [mm]    |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 74     | DrainCoeff_mm_hr     | Drainage Coefficient - Rutter                      | [mm/hr] |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 75     | DrainExpPar_1_mm     | Drainage Exponent Parameter - Rutter               | [mm-1]  |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 76     | LandUseAlb_[]        | Albedo                                             | [-]     |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 77     | VegHeight_m          | Vegetation Height                                  | [m]     |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 78     | OptTransmCoeff_[]    | Optical Transmission Coefficient                   | [-]     |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 79     | StomRes_s_m          | Canopy-Average Stomatal Resistance                 | [s/m]   |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 80     | VegFraction_[]       | Vegetation Fraction                                | [-]     |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 81     | LeafAI_[]            | Canopy Leaf Area Index                             | [-]     |
+        +--------+----------------------+----------------------------------------------------+---------+
+        | 82     | RootZoneDepth_m      | Rootzone Depth                                     | [m]     |
+        +--------+----------------------+----------------------------------------------------+---------+
 
 Basin-averaged Hydrological Time Series
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 6.7** Content of *.mrf file
+  **Table 8.7** Content of ``*.mrf`` file
 
-        .. tabularcolumns:: |c|c|c|
+        .. tabularcolumns:: |c|c|c|c|
 
-        +-------+--------------------------------------------+--------+
-        | Column| Description                                | Units  |
-        +=======+============================================+========+
-        | 1     | Time                                       | [hr]   |
-        +-------+--------------------------------------------+--------+
-        | 2     | Surface Runoff from Hydrologic Routing, Srf| [m³/s] |
-        +-------+--------------------------------------------+--------+
-        | 3     | Mean Areal Precipitation, MAP              | [mm/hr]|
-        +-------+--------------------------------------------+--------+
-        | 4     | Maximum Rainfall Rate, Max                 | [mm/hr]|
-        +-------+--------------------------------------------+--------+
-        | 5     | Minimum Rainfall Rate, Min                 | [mm/hr]|
-        +-------+--------------------------------------------+--------+
-        | 6     | Forecast State, Fstate                     | [ ]    |
-        +-------+--------------------------------------------+--------+
-        | 7     | Mean Surface Soil Moisture (in top 10 cm), | [ ]    |
-        |       | MSM100                                     |        |
-        +-------+--------------------------------------------+--------+
-        | 8     | Mean Soil Moisture in Root Zone (in top 1  | [ ]    |
-        |       | m), MSMRt                                  |        |
-        +-------+--------------------------------------------+--------+
-        | 9     | Mean Soil Moisture in Unsaturated Zone     | [ ]    |
-        |       | (above water table), MSMU                  |        |
-        +-------+--------------------------------------------+--------+
-        | 10    | Mean Depth to Groundwater, MGW             | [mm]   |
-        +-------+--------------------------------------------+--------+
-        | 11    | Mean Evapotranspiration, MET               | [mm]   |
-        +-------+--------------------------------------------+--------+
-        | 12    | Areal Fraction of Surface Saturation, Sat  | [ ]    |
-        +-------+--------------------------------------------+--------+
-        | 13    | Areal Fraction of Rainfall, Rain           | [ ]    |
-        +-------+--------------------------------------------+--------+
-        | 14    | Average Snow Water Equivalent, AvSWE       | [cm]   |
-        +-------+--------------------------------------------+--------+
-        | 15    | Average Amount of Snow Melt, AvMelt        | [cm]   |
-        +-------+--------------------------------------------+--------+
-        | 16    | Average Snow Temperature, AvSTC            | [°C]   |
-        +-------+--------------------------------------------+--------+
-        | 17    | Average Change in Snow Pack Internal       | [kJ/m²]|
-        |       | Energy, AvDUint                            |        |
-        +-------+--------------------------------------------+--------+
-        | 18    | Average Latent Heat Flux from Snow         | [kJ/m²]|
-        |       | Covered Areas, AvSLHF                      |        |
-        +-------+--------------------------------------------+--------+
-        | 19    | Average Sensible Heat Flux from Snow       | [kJ/m²]|
-        |       | Covered Areas, AvSSHF                      |        |
-        +-------+--------------------------------------------+--------+
-        | 20    | Average Precipitation Heat Flux from Snow  | [kJ/m²]|
-        |       | Covered Areas, AvSPHF                      |        |
-        +-------+--------------------------------------------+--------+
-        | 21    | Average Ground Heat Flux from Snow         | [kJ/m²]|
-        |       | Covered Areas, AvSGHF                      |        |
-        +-------+--------------------------------------------+--------+
-        | 22    | Average Incoming Longwave Radiation from   | [kJ/m²]|
-        |       | Snow Covered Areas, AvSRLI                 |        |
-        +-------+--------------------------------------------+--------+
-        | 23    | Average Outgoing Longwave Radiation from   | [kJ/m²]|
-        |       | Snow Covered Areas, AvSRLO                 |        |
-        +-------+--------------------------------------------+--------+
-        | 24    | Average Incoming Shortwave Radiation from  | [kJ/m²]|
-        |       | Snow Covered Areas, AvSRSI                 |        |
-        +-------+--------------------------------------------+--------+
-        | 25    | Mean Intercepted Snow Water Equivalent,    | [cm]   |
-        |       | AvInSn                                     |        |
-        +-------+--------------------------------------------+--------+
-        | 26    | Mean Sublimation from Intercepted Snow,    | [cm]   |
-        |       | AvInSu                                     |        |
-        +-------+--------------------------------------------+--------+
-        | 27    | Mean Unloaded Snow from Canopy, AvInUn     | [cm]   |
-        +-------+--------------------------------------------+--------+
-        | 28    | Fraction Snow Covered Area, SCA            | [ ]    |
-        +-------+--------------------------------------------+--------+
-        | 29    | Channel percolation, ChanP                 | [m³]   |
-        +-------+--------------------------------------------+--------+
-        | 29    | Net Outflow from Unsaturated Zone, nQunsat | [mm]   |
-        +-------+--------------------------------------------+--------+
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | Column | Variable       | Description                                                  | Units   |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 1      | Time_hr        | Time                                                         | [hr]    |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 2      | Srf_m3_s       | Surface Runoff from Hydrologic Routing                       | [m3/s]  |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 3      | MAP_mm_hr      | Mean Areal Precipitation                                     | [mm/hr] |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 4      | RainMax_mm_hr  | Maximum Rainfall Rate                                        | [mm/hr] |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 5      | RainMin_mm_hr  | Minimum Rainfall Rate                                        | [mm/hr] |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 6      | MSM100_[]      | Mean Surface Soil Moisture, top 10 cm                        | [-]     |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 7      | MSMRt_[]       | Mean Soil Moisture in Root Zone, top 1 m                     | [-]     |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 8      | MSMU_[]        | Mean Soil Moisture in Unsaturated Zone (above water table)   | [-]     |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 9      | MDGW_mm        | Mean Depth to Groundwater                                    | [mm]    |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 10     | MET_mm         | Mean Evapotranspiration                                      | [mm]    |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 11     | SatPercent_[]  | Areal Fraction of Surface Saturation                         | [-]     |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 12     | RainPercent_[] | Areal Fraction of Rainfall                                   | [-]     |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 13     | AvSWE_cm       | Average Snow Water Equivalent                                | [cm]    |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 14     | AvMelt_cm      | Average Amount of Snow Melt                                  | [cm]    |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 15     | AvSnSub_cm     | Average Sublimation from Snowpack                            | [cm]    |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 16     | AvSnEvap_cm    | Average Evaporation from Snowpack                            | [cm]    |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 17     | AvSTC_C        | Average Snow Temperature                                     | [C]     |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 18     | AvDUInt_kJ_m2  | Average Change in Snow Pack Internal Energy                  | [kJ/m2] |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 19     | AvSLHF_kJ_m2   | Average Latent Heat Flux from Snow Covered Areas             | [kJ/m2] |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 20     | AvSSHF_kJ_m2   | Average Sensible Heat Flux from Snow Covered Areas           | [kJ/m2] |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 21     | AvSPHF_kJ_m2   | Average Precipitation Heat Flux from Snow Covered Areas      | [kJ/m2] |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 22     | AvSGHF_kJ_m2   | Average Ground Heat Flux from Snow Covered Areas             | [kJ/m2] |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 23     | AvSRLI_kJ_m2   | Average Incoming Longwave Radiation from Snow Covered Areas  | [kJ/m2] |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 24     | AvSRLO_kJ_m2   | Average Outgoing Longwave Radiation from Snow Covered Areas  | [kJ/m2] |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 25     | AvSRSI_kJ_m2   | Average Incoming Shortwave Radiation from Snow Covered Areas | [kJ/m2] |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 26     | AvInSn_cm      | Mean Intercepted Snow Water Equivalent                       | [cm]    |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 27     | AvInSu_cm      | Mean Sublimation from Intercepted Snow                       | [cm]    |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 28     | AvInUn_cm      | Mean Unloaded Snow from Canopy                               | [cm]    |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 29     | SCA_[]         | Fraction Snow Covered Area                                   | [-]     |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 30     | ChannelPerc_m3 | Channel Percolation                                          | [m3]    |
+        +--------+----------------+--------------------------------------------------------------+---------+
+        | 31     | Qunsat_mm_hr   | Net Outflow from Unsaturated Zone                            | [mm/hr] |
+        +--------+----------------+--------------------------------------------------------------+---------+
 
 Basin-averaged Hydrological Time Series
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 6.8** Content for *.rft files
+  **Table 8.8** Content for ``*.rft`` files
 
-        .. tabularcolumns:: |c|c|c|
+        .. tabularcolumns:: |c|c|c|c|
 
-        +-------+-----------------------------------+--------+
-        | Column| Description                       | Units  |
-        +=======+===================================+========+
-        | 1     | Time                              | [hr]   |
-        +-------+-----------------------------------+--------+
-        | 2     | Infiltration-excess Runoff, Hsrf  | [m³/s] |
-        +-------+-----------------------------------+--------+
-        | 3     | Saturation-excess Runoff, Sbsrf   | [m³/s] |
-        +-------+-----------------------------------+--------+
-        | 4     | Perched Return Flow, Psrf         | [m³/s] |
-        +-------+-----------------------------------+--------+
-        | 5     | Groundwater Exfiltration, Satsrf  | [m³/s] |
-        +-------+-----------------------------------+--------+
+        +--------+-------------+----------------------------+--------+
+        | Column | Variable    | Description                | Units  |
+        +--------+-------------+----------------------------+--------+
+        | 1      | Time_hr     | Time                       | [hr]   |
+        +--------+-------------+----------------------------+--------+
+        | 2      | Hsrf_m3_s   | Infiltration-excess Runoff | [m3/s] |
+        +--------+-------------+----------------------------+--------+
+        | 3      | Sbsrf_m3_s  | Saturation-excess Runoff   | [m3/s] |
+        +--------+-------------+----------------------------+--------+
+        | 4      | Psrf_m3_s   | Perched Return Flow        | [m3/s] |
+        +--------+-------------+----------------------------+--------+
+        | 5      | Satsrf_m3_s | Groundwater Exfiltration   | [m3/s] |
+        +--------+-------------+----------------------------+--------+
+
 
 Spatial Output
 ----------------
@@ -391,326 +382,276 @@ Spatial Output
 Dynamic Spatial Output Tables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 6.9** Content of *timestamp_00d files
+  **Table 8.9** Content of ``*timestamp_00d`` files
 
-        .. tabularcolumns:: |c|c|c|
+  By default, all of the variables below are written to the dynamic spatial output files. The optional *DYNVARFILE* keyword (see :doc:`Model Input File`) points to a plain, CSV text file listing a subset of these variable names (Nwt,Mu,Mi,...), to reduce the number of columns written and the associated memory/disk cost; the *ID* column is always included regardless of selection. Names in *DYNVARFILE* must match the *Variable* column below exactly.
 
-        +-------+---------------------------------------+----------+
-        | Column| Description                           | Units    |
-        +=======+=======================================+==========+
-        | 1     | Node Identification, ID               | [id]     |
-        +-------+---------------------------------------+----------+
-        | 2     | Depth to groundwater table, Nwt       | [mm]     |
-        +-------+---------------------------------------+----------+
-        | 3     | Total moisture above the water table, | [mm]     |
-        |       | Mu                                    |          |
-        +-------+---------------------------------------+----------+
-        | 4     | Moisture content in the initialization| [mm]     |
-        |       | profile, Mi                           |          |
-        +-------+---------------------------------------+----------+
-        | 5     | Wetting front depth, Nf               | [mm]     |
-        +-------+---------------------------------------+----------+
-        | 6     | Top front depth, Nt                   | [mm]     |
-        +-------+---------------------------------------+----------+
-        | 7     | Unsaturated lateral flow out from     | [mm/hr]  |
-        |       | cell, Qpout                           |          |
-        +-------+---------------------------------------+----------+
-        | 8     | Unsaturated lateral flow into cell,   | [mm/hr]  |
-        |       | Qpin                                  |          |
-        +-------+---------------------------------------+----------+
-        | 9     | Surface Runoff, Srf                   | [mm]     |
-        +-------+---------------------------------------+----------+
-        | 10    | Rainfall, Rain                        | [mm/hr]  |
-        +-------+---------------------------------------+----------+
-        | 11    | Snow Temperature, ST                  | [°C]     |
-        +-------+---------------------------------------+----------+
-        | 12    | Ice Part of Snow Water Equivalent, IWE| [cm]     |
-        +-------+---------------------------------------+----------+
-        | 13    | Liquid Part of Snow Water Equivalent, | [cm]     |
-        |       | LWE                                   |          | 
-        +-------+---------------------------------------+----------+
-        | 14    | Snow Sublimation, SnSu                | [cm]     |
-        +-------+---------------------------------------+----------+
-        | 15    | Snow Evaporation, SnEvap              | [cm]     |
-        +-------+---------------------------------------+----------+
-        | 16    | Snow Melt, SnMelt                     | [cm]     |
-        +-------+---------------------------------------+----------+
-        | 17    | Internal Energy of Snow Pack, Upack   | [kJ/m²]  |
-        +-------+---------------------------------------+----------+
-        | 18    | Latent Heat Flux from Snow Cover, sLHF| [kJ/m²]  |
-        +-------+---------------------------------------+----------+
-        | 19    | Sensible Heat Flux from Snow Cover,   | [kJ/m²]  |
-        |       | sSHF                                  |          |
-        +-------+---------------------------------------+----------+
-        | 20    | Ground Heat Flux from Snow Cover, sGHF| [kJ/m²]  |
-        +-------+---------------------------------------+----------+
-        | 21    | Precipitation Heat Flux from Snow     | [kJ/m²]  |
-        |       | Cover, sPHF                           |          |
-        +-------+---------------------------------------+----------+
-        | 22    | Outgoing Longwave Radiation from Snow | [kJ/m²]  |
-        |       | Cover, sRLo                           |          |
-        +-------+---------------------------------------+----------+
-        | 23    | Incoming Longwave Radation from Snow  | [kJ/m²]  |
-        |       | Cover, sRLi                           |          |
-        +-------+---------------------------------------+----------+
-        | 24    | Incoming Shortwave Radiation from Snow| [kJ/m²]  |
-        |       | Cover, sRSi                           |          |
-        +-------+---------------------------------------+----------+
-        | 25    | Error in Energy Balance, Uerr         | [J/m²]   |
-        +-------+---------------------------------------+----------+
-        | 26    | Intercepted SWE, IntSWE               | [cm]     |
-        +-------+---------------------------------------+----------+
-        | 27    | Sublimated Snow from Canopy, IntSub   | [cm]     |
-        +-------+---------------------------------------+----------+
-        | 28    | Unloaded Snow from Canopy, IntUnl     | [cm]     |
-        +-------+---------------------------------------+----------+
-        | 29    | Soil Moisture, top 10 cm, SoilMoist   | [ ]      |
-        +-------+---------------------------------------+----------+
-        | 30    | Root Zone Moisture, top 1 m, RootMoist| [ ]      |
-        +-------+---------------------------------------+----------+
-        | 31    | Canopy Storage, CanStorage            | [mm]     |
-        +-------+---------------------------------------+----------+
-        | 32    | Actual Evaporation, ActEvp            | [mm/hr]  |
-        +-------+---------------------------------------+----------+
-        | 33    | Evaporation from Bare Soil, EvpSoil   | [mm/hr]  |
-        +-------+---------------------------------------+----------+
-        | 34    | Total Evapotranspiration, ET          | [mm/hr]  |
-        +-------+---------------------------------------+----------+
-        | 35    | Ground Heat Flux, Gflux               | [W/m²]   |
-        +-------+---------------------------------------+----------+
-        | 36    | Sensible Heat Flux, Hflux             | [W/m²]   |
-        +-------+---------------------------------------+----------+
-        | 37    | Latent Heat Flux, Lflux               | [W/m²]   |
-        +-------+---------------------------------------+----------+
-        | 38    | Discharge, Qstrm                      | [m³/s]   |
-        +-------+---------------------------------------+----------+
-        | 39    | Channel Stage, Hlev                   | [m]      |
-        +-------+---------------------------------------+----------+
-        | 40    | Channel Flow Velocity, FlwVlc         | [m/s]    |
-        +-------+---------------------------------------+----------+
-        | 41    | Canopy Storage Parameter, CanStorParam| [mm]     |
-        +-------+---------------------------------------+----------+
-        | 42    | Interception Coeff., IntercepCoeff.   | [ ]      |
-        +-------+---------------------------------------+----------+
-        | 43    | Free Throughfall Coeff.- Rutter,      | [ ]      |
-        |       | ThroughFall                           |          |
-        +-------+---------------------------------------+----------+
-        | 44    | Canopy Field Capacity – Rutter,       | [mm]     |
-        |       | CanFieldCap                           |          |
-        +-------+---------------------------------------+----------+
-        | 45    | Drainage coefficient – Rutter,        | [mm/hr]  |
-        |       | DrainCoeff                            |          |
-        +-------+---------------------------------------+----------+
-        | 46    | Drainage Expon. Param. – Rutter,      | [mm⁻¹]   |
-        |       | DrainExpPar                           |          |
-        +-------+---------------------------------------+----------+
-        | 47    | Albedo, LandUseAlb                    | [ ]      |
-        +-------+---------------------------------------+----------+
-        | 48    | Vegetation Height , VegHeight         | [m]      |
-        +-------+---------------------------------------+----------+
-        | 49    | Optical Transmission Coeff.,          | [ ]      |
-        |       | OptTransmCoeff                        |          |
-        +-------+---------------------------------------+----------+
-        | 50    | Canopy- Average Stomatal Resistance,  | [s/m]    |
-        |       | StomRes                               |          |
-        +-------+---------------------------------------+----------+
-        | 51    | Vegetation Fraction, VegFraction      | [ ]      |
-        +-------+---------------------------------------+----------+
-        | 52    | Canopy Leaf Area Index, LeafAI        | [ ]      |
-        +-------+---------------------------------------+----------+
+        .. tabularcolumns:: |c|c|c|c|
+
+        +--------+----------------+------------------------------------------------+---------+
+        | Column | Variable       | Description                                    | Units   |
+        +--------+----------------+------------------------------------------------+---------+
+        | 1      | ID             | Node Identification                            | [id]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 2      | Nwt            | Depth to groundwater table                     | [mm]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 3      | Mu             | Total moisture above the water table           | [mm]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 4      | Mi             | Moisture content in the initialization profile | [mm]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 5      | Nf             | Wetting front depth                            | [mm]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 6      | Nt             | Top front depth                                | [mm]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 7      | Qpout          | Unsaturated lateral flow out from cell         | [mm/hr] |
+        +--------+----------------+------------------------------------------------+---------+
+        | 8      | Qpin           | Unsaturated lateral flow into cell             | [mm/hr] |
+        +--------+----------------+------------------------------------------------+---------+
+        | 9      | Srf            | Surface Runoff                                 | [mm]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 10     | Rain           | Rainfall                                       | [mm/hr] |
+        +--------+----------------+------------------------------------------------+---------+
+        | 11     | ST             | Snow Temperature                               | [C]     |
+        +--------+----------------+------------------------------------------------+---------+
+        | 12     | IWE            | Ice Part of Snow Water Equivalent              | [cm]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 13     | LWE            | Liquid Part of Snow Water Equivalent           | [cm]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 14     | SnSub          | Snow Sublimation                               | [cm]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 15     | SnEvap         | Snow Evaporation                               | [cm]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 16     | SnMelt         | Snow Melt                                      | [cm]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 17     | SnDepth        | Snow Depth                                     | [cm]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 18     | Upack          | Internal Energy of Snow Pack                   | [kJ/m2] |
+        +--------+----------------+------------------------------------------------+---------+
+        | 19     | sLHF           | Latent Heat Flux from Snow Cover               | [kJ/m2] |
+        +--------+----------------+------------------------------------------------+---------+
+        | 20     | sSHF           | Sensible Heat Flux from Snow Cover             | [kJ/m2] |
+        +--------+----------------+------------------------------------------------+---------+
+        | 21     | sGHF           | Ground Heat Flux from Snow Cover               | [kJ/m2] |
+        +--------+----------------+------------------------------------------------+---------+
+        | 22     | sPHF           | Precipitation Heat Flux from Snow Cover        | [kJ/m2] |
+        +--------+----------------+------------------------------------------------+---------+
+        | 23     | sRLo           | Outgoing Longwave Radiation from Snow Cover    | [kJ/m2] |
+        +--------+----------------+------------------------------------------------+---------+
+        | 24     | sRLi           | Incoming Longwave Radiation from Snow Cover    | [kJ/m2] |
+        +--------+----------------+------------------------------------------------+---------+
+        | 25     | sRSi           | Incoming Shortwave Radiation from Snow Cover   | [kJ/m2] |
+        +--------+----------------+------------------------------------------------+---------+
+        | 26     | Uerr           | Error in Energy Balance                        | [J/m2]  |
+        +--------+----------------+------------------------------------------------+---------+
+        | 27     | IntSWE         | Intercepted Snow Water Equivalent              | [cm]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 28     | IntSub         | Sublimated Snow from Canopy                    | [cm]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 29     | IntUnl         | Unloaded Snow from Canopy                      | [cm]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 30     | SoilMoist      | Soil Moisture, top 10 cm                       | [-]     |
+        +--------+----------------+------------------------------------------------+---------+
+        | 31     | RootMoist      | Root Zone Moisture, top 1 m                    | [-]     |
+        +--------+----------------+------------------------------------------------+---------+
+        | 32     | CanStorage     | Canopy Storage                                 | [mm]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 33     | TransDryCan    | Canopy Transpiration                           | [mm/hr] |
+        +--------+----------------+------------------------------------------------+---------+
+        | 34     | EvpSoil        | Evaporation from Bare Soil                     | [mm/hr] |
+        +--------+----------------+------------------------------------------------+---------+
+        | 35     | ET             | Total Evapotranspiration                       | [mm/hr] |
+        +--------+----------------+------------------------------------------------+---------+
+        | 36     | GFlux          | Ground Heat Flux                               | [W/m2]  |
+        +--------+----------------+------------------------------------------------+---------+
+        | 37     | HFlux          | Sensible Heat Flux                             | [W/m2]  |
+        +--------+----------------+------------------------------------------------+---------+
+        | 38     | LFlux          | Latent Heat Flux                               | [W/m2]  |
+        +--------+----------------+------------------------------------------------+---------+
+        | 39     | Qstrm          | Discharge                                      | [m3/s]  |
+        +--------+----------------+------------------------------------------------+---------+
+        | 40     | Hlev           | Channel Stage                                  | [m]     |
+        +--------+----------------+------------------------------------------------+---------+
+        | 41     | FlwVlc         | Channel Flow Velocity                          | [m/s]   |
+        +--------+----------------+------------------------------------------------+---------+
+        | 42     | ThroughFall    | Free Throughfall Coefficient - Rutter          | [-]     |
+        +--------+----------------+------------------------------------------------+---------+
+        | 43     | CanFieldCap    | Canopy Field Capacity - Rutter                 | [mm]    |
+        +--------+----------------+------------------------------------------------+---------+
+        | 44     | DrainCoeff     | Drainage Coefficient - Rutter                  | [mm/hr] |
+        +--------+----------------+------------------------------------------------+---------+
+        | 45     | DrainExpPar    | Drainage Exponent Parameter - Rutter           | [mm-1]  |
+        +--------+----------------+------------------------------------------------+---------+
+        | 46     | LandUseAlb     | Albedo                                         | [-]     |
+        +--------+----------------+------------------------------------------------+---------+
+        | 47     | VegHeight      | Vegetation Height                              | [m]     |
+        +--------+----------------+------------------------------------------------+---------+
+        | 48     | OptTransmCoeff | Optical Transmission Coefficient               | [-]     |
+        +--------+----------------+------------------------------------------------+---------+
+        | 49     | StomRes        | Canopy-Average Stomatal Resistance             | [s/m]   |
+        +--------+----------------+------------------------------------------------+---------+
+        | 50     | VegFraction    | Vegetation Fraction                            | [-]     |
+        +--------+----------------+------------------------------------------------+---------+
+        | 51     | LeafAI         | Canopy Leaf Area Index                         | [-]     |
+        +--------+----------------+------------------------------------------------+---------+
 
 
 Time-integrated Spatial Output Table
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 6.10** Content of *timestamp_00i file
+  **Table 8.10** Content of ``*timestamp_00i`` file
 
-        .. tabularcolumns:: |c|c|c|
+        .. tabularcolumns:: |c|c|c|c|
 
-        +-------+----------------------------------------+-------------+
-        | Column| Description                            | Units       |
-        +=======+========================================+=============+
-        | 1     | Node Identification, ID                | [id]        |
-        +-------+----------------------------------------+-------------+
-        | 2     | Boundary Flag, BndCd                   | [ ]         |
-        +-------+----------------------------------------+-------------+
-        | 3     | Elevation, Z                           | [m]         |
-        +-------+----------------------------------------+-------------+
-        | 4     | Voronoi Area, VAr                      | [m²]        |
-        +-------+----------------------------------------+-------------+
-        | 5     | Contributing Area, CAr                 | [km²]       |
-        +-------+----------------------------------------+-------------+
-        | 6     | Curvature, Curv                        | [ ]         |
-        +-------+----------------------------------------+-------------+
-        | 7     | Flow Edge Length, EdgL                 | [m]         |
-        +-------+----------------------------------------+-------------+
-        | 8     | Tangent of Flow Edge Slope, tan(Slp)   | [ ]         |
-        +-------+----------------------------------------+-------------+
-        | 9     | Width of Voronoi Flow Window, FWidth   | [m]         |
-        +-------+----------------------------------------+-------------+
-        | 10    | Site Aspect as Angle from North, Aspect| [radian]    |
-        +-------+----------------------------------------+-------------+
-        | 11    | Sky View Factor, SV                    | [ ]         |
-        +-------+----------------------------------------+-------------+
-        | 12    | Land View Factor, LV                   | [ ]         |
-        +-------+----------------------------------------+-------------+
-        | 13    | Average Soil Moisture, top 10 cm, AvSM | [ ]         |
-        +-------+----------------------------------------+-------------+
-        | 14    | Average Root Zone Moisture, top 1 m,   | [ ]         |
-        |       | AvRtM                                  |             |
-        +-------+----------------------------------------+-------------+
-        | 15    | Infiltration-excess Runoff Occurences, | [# of       |
-        |       | HOccr                                  | TIMESTEP]   |
-        +-------+----------------------------------------+-------------+
-        | 16    | Infiltration-excess Runoff Average     | [mm/hr]     |
-        |       | Rate, HRt                              |             |
-        +-------+----------------------------------------+-------------+
-        | 17    | Saturation-excess Runoff Occurences,   | [# of       |
-        |       | SbOccr                                 | TIMESTEP]   |
-        +-------+----------------------------------------+-------------+
-        | 18    | Saturation-excess Runoff Average Rate, | [mm/hr]     |
-        |       | SbRt                                   |             |
-        +-------+----------------------------------------+-------------+
-        | 19    | Perched Return Runoff Occurences,      | [# of       |
-        |       | POccr                                  | TIMESTEP]   |
-        +-------+----------------------------------------+-------------+
-        | 20    | Perched Return Runoff Average Rate,    | [mm/hr]     |
-        |       | PRt                                    |             |
-        +-------+----------------------------------------+-------------+
-        | 21    | Groundwater Exfiltration Runoff        | [# of       |
-        |       | Occurences, SatOccr                    | GWSTEP]     |
-        +-------+----------------------------------------+-------------+
-        | 22    | Groundwater Exfiltration Runoff        | [mm/hr]     |
-        |       | Average Rate, SatRt                    |             |
-        +-------+----------------------------------------+-------------+
-        | 23    | Soil Saturation Occurences, SoiSatOccr | [# of       |
-        |       |                                        | TIMESTEP]   |
-        +-------+----------------------------------------+-------------+
-        | 24    | Recharge-Discharge Variable, RchDsch   | [m]         |
-        +-------+----------------------------------------+-------------+
-        | 25    | Average Evapotranspiration, AveET      | [mm/hr]     |
-        +-------+----------------------------------------+-------------+
-        | 26    | Evaporative Fraction, EvpFrct          | [ ]         |
-        +-------+----------------------------------------+-------------+
-        | 27    | Cumulative Evapotranspiration, cET     | [mm]        |
-        +-------+----------------------------------------+-------------+
-        | 28    | Cumulative Soil Evaporation, cEsoil    | [mm]        |
-        +-------+----------------------------------------+-------------+
-        | 29    | Cumulative Latent Heat Flux from Snow  | [kJ/m²]     |
-        |       | Cover, cLHF                            |             |
-        +-------+----------------------------------------+-------------+
-        | 30    | Cumulative Melt, cMelt                 | [cm]        |
-        +-------+----------------------------------------+-------------+
-        | 31    | Cumulative Sensible Heat Flux from     |  [kJ/m²]    |
-        |       | Snow Cover, cSHF                       |             |
-        +-------+----------------------------------------+-------------+
-        | 32    | Cumulative Precipitation Heat Flux     | [kJ/m²]     |
-        |       | from Snow Cover, cPHF                  |             |
-        +-------+----------------------------------------+-------------+
-        | 33    | Cumulative Incoming Longwave           | [kJ/m²]     |
-        |       | Radiation from Snow Cover, cRLIn       |             |
-        +-------+----------------------------------------+-------------+
-        | 34    | Cumulative Outgoing Longwave           | [kJ/m²]     |
-        |       | Radiation from Snow Cover, cRLo        |             |
-        +-------+----------------------------------------+-------------+
-        | 35    | Cumulative Incoming Shortwave          | [kJ/m²]     |
-        |       | Radiation from Snow Cover, cRSIn       |             |
-        +-------+----------------------------------------+-------------+
-        | 36    | Cumulative Ground Heat Flux from       | [kJ/m²]     |
-        |       | Snow Cover, cGHF                       |             |
-        +-------+----------------------------------------+-------------+
-        | 37    | Cumulative Energy Balance Error, cUErr | [kJ/m²]     |
-        +-------+----------------------------------------+-------------+
-        | 38    | Cumulative Hrs of Sun exposure,cHrsSun | [hr]        |
-        +-------+----------------------------------------+-------------+
-        | 39    | Cumulative Hours Snow Covered, cHrsSnow| [hr]        |
-        +-------+----------------------------------------+-------------+
-        | 40    | Longest Time of Continuous Snow        | [hr]        |
-        |       | Cover, persTime                        |             |
-        +-------+----------------------------------------+-------------+
-        | 41    | Maximum Season SWE, peakWE             | [cm]        |
-        +-------+----------------------------------------+-------------+
-        | 42    | Simulation Hour of Maximum SWE,        | [hr]        |
-        |       | peakTime                               |             |
-        +-------+----------------------------------------+-------------+
-        | 43    | Simulation Hr of Initial SWE, initTime | [hr]        |
-        +-------+----------------------------------------+-------------+
-        | 44    | Cumulative Sublimated Snow from        | [cm]        |
-        |       | Canopy, cIntSub                                      |
-        +-------+----------------------------------------+-------------+
-        | 45    | Cumulative Sublimaton from Snow Pack,  |  [cm]       |  
-        |       | cSnSub                                 |             |
-        +-------+----------------------------------------+-------------+
-        | 46    | Cumulative Evaporation from Snow Pack, | [cm]        |
-        |       | cSnEvap                                |             | 
-        +-------+----------------------------------------+-------------+
-        | 47    | Cumulative Unloaded Snow from Canopy,  | [cm]        |
-        |       | cIntUnl                                |             |
-        +-------+----------------------------------------+-------------+
-        | 48    | Av. Canopy Storage Parameter,          | [mm]        |
-        |       | AvCanStorParam                         |             |
-        +-------+----------------------------------------+-------------+
-        | 49    | Av. Intercep. Coeff., AvIntercCoeff    | [ ]         |
-        +-------+----------------------------------------+-------------+
-        | 50    | Av. Free Throughfall Coeff.- Rutter,   | [ ]         |
-        |       | AvTF                                   |             |
-        +-------+----------------------------------------+-------------+
-        | 51    | Av. Canopy Field Capac. – Rutter,      | [mm]        |
-        |       | AvCanFieldCap                          |             |
-        +-------+----------------------------------------+-------------+
-        | 52    | Av. Drain. Coeff. – Rutter,            | [mm/hr]     |
-        |       | AvDrainCoeff                           |             |
-        +-------+----------------------------------------+-------------+
-        | 53    | Av. Drain. Expon. Param. – Rutter,     | [mm⁻¹]      |
-        |       | AvDrainExpPar                          |             |
-        +-------+----------------------------------------+-------------+
-        | 54    | Av. Albedo,AvLUAlb                     | [ ]         |
-        +-------+----------------------------------------+-------------+
-        | 55    | Av. Veg. Height , AvVegHeight          | [m]         |
-        +-------+----------------------------------------+-------------+
-        | 56    | Av. Optical Transm. Coeff., AvOTCoeff  | [ ]         |
-        +-------+----------------------------------------+-------------+
-        | 57    | Av. Canopy- Average Stom. Resist.,     | [s/m]       |
-        |       | AvStomRes                              |             |
-        +-------+----------------------------------------+-------------+
-        | 58    | Av. Veg. Frac., AvVegFract             | [ ]         |
-        +-------+----------------------------------------+-------------+
-        | 59    | Av. Canopy Leaf Area Index, AvLeafAI   | [ ]         |
-        +-------+----------------------------------------+-------------+
-        | 60    | Depth to Bedrock, Bedrock_Depth_mm     | [mm]        |
-        +-------+----------------------------------------+-------------+
-        | 61    | Saturate Hydraulic Conducitivity, Ks   | [mm/hr]     |
-        +-------+----------------------------------------+-------------+
-        | 62    | Saturated Soil Moisture, ThetaS        | [-]         |
-        +-------+----------------------------------------+-------------+
-        | 63    | Residual Soil Moisture, ThetaR         | [-]         |
-        +-------+----------------------------------------+-------------+
-        | 64    | Pore Distribution Index, PoreSize      | [-]         |
-        +-------+----------------------------------------+-------------+
-        | 65    | Air Entry Bubbling Pressure,           |[mm]         |
-        |       | AirEBubP                               |(negative)   |     
-        +-------+----------------------------------------+-------------+
-        | 66    | Hydraulic Decay Parameter, DecayF      | [1/mm]      |
-        +-------+----------------------------------------+-------------+
-        | 67    | Saturated Anisotropy Ratio, SatAnRatio | [-]         |
-        +-------+----------------------------------------+-------------+
-        | 68    | Unsaturated Anisotropy Ratio,          | [-]         |
-        |       | UnsatAnRatio                           |             |
-        +-------+----------------------------------------+-------------+
-        | 69    | Porosity, Porosity                     | [-]         |
-        +-------+----------------------------------------+-------------+
-        | 70    | Volumetric Heat Conductivity,          | [J/msK]     |
-        |       | VolHeatCond                            |             |
-        +-------+----------------------------------------+-------------+
-        | 71    | Soil Heat Capacity, SoilHeatCap        | [J/m^k]     |
-        +-------+----------------------------------------+-------------+
-        | 72    | Soil Class, SoilID                     | [-]         |
-        +-------+----------------------------------------+-------------+ 
-        | 73    | Landuse Class, LandUseID               | [-]         |
-        +-------+----------------------------------------+-------------+   
-
-
-
-
-
-
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | Column | Variable         | Description                                             | Units           |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 1      | ID               | Node Identification                                     | [id]            |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 2      | BndCd            | Boundary Flag                                           | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 3      | Proc             | Owning Processor Rank (0 in serial)                     | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 4      | Z                | Elevation                                               | [m]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 5      | VAr              | Voronoi Area                                            | [m2]            |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 6      | CAr              | Contributing Area                                       | [km2]           |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 7      | Curv             | Curvature                                               | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 8      | EdgL             | Flow Edge Length                                        | [m]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 9      | Slp              | Tangent of Flow Edge Slope                              | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 10     | FWidth           | Width of Voronoi Flow Window                            | [m]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 11     | Aspect           | Site Aspect as Angle from North                         | [radian]        |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 12     | SV               | Sky View Factor                                         | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 13     | LV               | Land View Factor                                        | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 14     | AvSM             | Average Soil Moisture, top 10 cm                        | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 15     | AvRtM            | Average Root Zone Moisture, top 1 m                     | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 16     | HOccr            | Infiltration-excess Runoff Occurrences                  | [# of TIMESTEP] |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 17     | HRt              | Infiltration-excess Runoff Average Rate                 | [mm/hr]         |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 18     | SbOccr           | Saturation-excess Runoff Occurrences                    | [# of TIMESTEP] |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 19     | SbRt             | Saturation-excess Runoff Average Rate                   | [mm/hr]         |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 20     | POccr            | Perched Return Runoff Occurrences                       | [# of TIMESTEP] |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 21     | PRt              | Perched Return Runoff Average Rate                      | [mm/hr]         |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 22     | SatOccr          | Groundwater Exfiltration Runoff Occurrences             | [# of GWSTEP]   |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 23     | SatRt            | Groundwater Exfiltration Runoff Average Rate            | [mm/hr]         |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 24     | SoiSatOccr       | Soil Saturation Occurrences                             | [# of TIMESTEP] |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 25     | RchDsch          | Recharge-Discharge Variable                             | [m]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 26     | AvET             | Average Evapotranspiration                              | [mm/hr]         |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 27     | EvpFrct          | Evaporative Fraction                                    | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 28     | cET              | Cumulative Evapotranspiration                           | [mm]            |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 29     | cEsoil           | Cumulative Soil Evaporation                             | [mm]            |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 30     | cLHF             | Cumulative Latent Heat Flux from Snow Cover             | [kJ/m2]         |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 31     | cMelt            | Cumulative Melt                                         | [cm]            |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 32     | cSHF             | Cumulative Sensible Heat Flux from Snow Cover           | [kJ/m2]         |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 33     | cPHF             | Cumulative Precipitation Heat Flux from Snow Cover      | [kJ/m2]         |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 34     | cRLIn            | Cumulative Incoming Longwave Radiation from Snow Cover  | [kJ/m2]         |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 35     | cRLo             | Cumulative Outgoing Longwave Radiation from Snow Cover  | [kJ/m2]         |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 36     | cRSIn            | Cumulative Incoming Shortwave Radiation from Snow Cover | [kJ/m2]         |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 37     | cGHF             | Cumulative Ground Heat Flux from Snow Cover             | [kJ/m2]         |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 38     | cUErr            | Cumulative Energy Balance Error                         | [kJ/m2]         |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 39     | cHrsSun          | Cumulative Hours of Sun Exposure                        | [hr]            |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 40     | cHrsSnow         | Cumulative Hours Snow Covered                           | [hr]            |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 41     | persTime         | Longest Time of Continuous Snow Cover                   | [hr]            |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 42     | peakWE           | Maximum Season SWE                                      | [cm]            |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 43     | initTime         | Simulation Hour of Initial SWE                          | [hr]            |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 44     | peakTime         | Simulation Hour of Maximum SWE                          | [hr]            |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 45     | cIntSub          | Cumulative Sublimated Snow from Canopy                  | [cm]            |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 46     | cSnSub           | Cumulative Sublimation from Snow Pack                   | [cm]            |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 47     | cSnEvap          | Cumulative Evaporation from Snow Pack                   | [cm]            |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 48     | cIntUnl          | Cumulative Unloaded Snow from Canopy                    | [cm]            |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 49     | AvTF             | Average Free Throughfall Coefficient - Rutter           | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 50     | AvCanFieldCap    | Average Canopy Field Capacity - Rutter                  | [mm]            |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 51     | AvDrainCoeff     | Average Drainage Coefficient - Rutter                   | [mm/hr]         |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 52     | AvDrainExpPar    | Average Drainage Exponent Parameter - Rutter            | [mm-1]          |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 53     | AvLUAlb          | Average Albedo                                          | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 54     | AvVegHeight      | Average Vegetation Height                               | [m]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 55     | AvOTCoeff        | Average Optical Transmission Coefficient                | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 56     | AvStomRes        | Average Canopy-Average Stomatal Resistance              | [s/m]           |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 57     | AvVegFract       | Average Vegetation Fraction                             | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 58     | AvLeafAI         | Average Canopy Leaf Area Index                          | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 59     | AvEvapThresh     | Average Soil Evaporation Threshold                      | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 60     | AvTransThresh    | Average Vegetation Transpiration Threshold              | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 61     | Bedrock_Depth_mm | Depth to Bedrock                                        | [mm]            |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 62     | Ks               | Saturated Hydraulic Conductivity                        | [mm/hr]         |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 63     | ThetaS           | Saturated Soil Moisture                                 | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 64     | ThetaR           | Residual Soil Moisture                                  | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 65     | PoreSize         | Pore Distribution Index                                 | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 66     | AirEBubPress     | Air Entry Bubbling Pressure                             | [mm] (negative) |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 67     | DecayF           | Hydraulic Decay Parameter                               | [1/mm]          |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 68     | SatAnRatio       | Saturated Anisotropy Ratio                              | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 69     | UnsatAnRatio     | Unsaturated Anisotropy Ratio                            | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 70     | Porosity         | Porosity                                                | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 71     | VolHeatCond      | Volumetric Heat Conductivity                            | [J/msK]         |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 72     | SoilHeatCap      | Soil Heat Capacity                                      | [J/m3K]         |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 73     | SoilID           | Soil Class                                              | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 74     | LandUseID        | Landuse Class                                           | [-]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+
+        | 75     | AvRootZoneDepth  | Average Rootzone Depth                                  | [m]             |
+        +--------+------------------+---------------------------------------------------------+-----------------+

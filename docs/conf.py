@@ -34,12 +34,12 @@ sys.path.insert(0, os.path.abspath('../'))
 # -- Project information -----------------------------------------------------
 
 project = 'tRIBS - Distributed Hydrologic Model'
-copyright = '2024 tRIBS Developers'
+copyright = '2026 tRIBS Developers'
 authors = '2024 tRIBS Developers'
 
 # The full version, including alpha/beta/rc tags
-release = '5.2'
-author = '2024 tRIBS Developersa'
+release = '6.0.0'
+author = 'tRIBS Developers'
 
 # -- General configuration ---------------------------------------------------
 

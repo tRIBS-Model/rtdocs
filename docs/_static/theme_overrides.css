@@ -1,3 +1,11 @@
+/* Widen the main content column. The RTD theme caps it at 800px, which leaves
+   a lot of empty space on wide monitors. Scale with viewport width (good for
+   wide tables) but cap the pixel value so paragraph line-length stays readable
+   on very large/ultrawide monitors. */
+.wy-nav-content {
+    max-width: min(75%, 1400px);
+}
+
 /* override table width restrictions as found on https://github.com/getpelican/pelican/issues/1311 */
 .wy-table-responsive table td, .wy-table-responsive table th {
     /* !important prevents the common CSS stylesheets from

@@ -53,9 +53,11 @@ Computational Processes:
 
     man/Model Design
     man/Model_Input_Formats
-    man/Model_Parameters_Forcings
+    man/Model_Parameters
+    man/Model_Forcings
     man/Model Input File
     man/Model_Execution
+    man/Parallel_Simulations
     man/Output
     man/QuickStart
 
@@ -77,6 +79,7 @@ Computational Processes:
     man/Docker
     man/Executables
     man/Benchmarks
+    man/Examples
     man/Templates
 
 

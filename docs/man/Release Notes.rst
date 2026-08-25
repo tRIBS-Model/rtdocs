@@ -5,12 +5,28 @@ This page provide a record of changes recorded by each version of tRIBS, startin
 
 Known Issues
 ------------
-For a list of known issues and their status, visit the tRIBS GitHub `Issues page <https://github.com/tribshms/tRIBS/issues>`_.
+
+- Mid-storm restarts diverge slightly (routing queues in transit are not preserved); the restart module is intended for use at spinup or end-of-dry-period.
+- ``OPTPERCOLATION = 3`` (Green-Ampt) currently exits with an error and is unavailable.
+- Flux magnitudes will differ from v5.x results as a result of the water-balance corrections in the 6.0.0 release. This is expected, not a regression.
+
+For a list of known issues and their status, visit the tRIBS GitHub `Issues page <https://github.com/tRIBS-Model/tRIBS/issues>`_.
 
 ------------------------------------------------------------------------------------------
 
 Version History
 ---------------
+
+tRIBS 6.0.0 (August 2026)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The tRIBS Distributed Hydrologic Modeling System, Version 6.0.0, is a major release focused on simplifying the user experience and streamlining the codebase. **It is not backwards compatible with previous versions:** the main input file, the text-based input and output formats, and several parameter conventions have all changed. Example input files are available in the `Model Benchmark Repository <https://github.com/tRIBS-Model/tRIBS-benchmarks>`_. Users working through the `pytRIBS <https://github.com/tRIBS-Model/pytRIBS>`_ Python package should upgrade to pytRIBS 1.0.0, which supports the v6.0.0 input and output formats; earlier versions of pytRIBS are not compatible with this release.
+
+Nearly all text-based input and output is now CSV with a single header row, replacing the previous fixed-width and count-header formats. Station and gridded forcing files no longer carry centroid latitude, longitude, or UTC offset; these moved to the main input file as ``UTCOFFSET``, ``CENTROIDLAT``, and ``CENTROIDLONG``. Point and gridded rainfall both standardize on mm/hr, and relative humidity is the only accepted humidity forcing. Land use parameters are now validated at startup, so models carrying out-of-range values stop with a descriptive message rather than running on.
+
+The snow module was refactored with dynamic snow density via compaction, liquid water routing by holding capacity and conductivity, and a selectable precipitation phase-partitioning scheme, all configured through a new optional snow parameter file (``.spf``). Canopy interception is handled exclusively by the Rutter water-balance method, with the legacy Gray (1970) formulation removed. Root zone depth became a land use parameter, supplied through the land use table or a raster, replacing the model-wide ``ROOTZONEDEPTH`` keyword, and a new static gridded land use option (``OPTLANDUSE = 2``) supplements the existing dynamic and tabular modes. Evapotranspiration, unsaturated zone, and snowpack calculations received several mass-balance corrections, and channel transmission losses were reworked, with conductivity now specified in mm/hr. Initial groundwater depth and depth to bedrock are now interpreted as vertical depths rather than slope-normal, which will change results for existing model setups.
+
+Parallel simulations are now self-contained: METIS is vendored into the source tree and compiled into the parallel binary, and the stream-reach graph is built and partitioned in-process at startup for however many MPI processes the run was launched with, retiring the standalone MeshBuilder tool and its external ``gpmetis`` and Perl-script workflow. A new partition-only mode (``PARALLELMODE = 2``) writes the partition file and reports load balance and edge cuts without running a simulation, and parallel outputs are merged on the head node rather than written per-processor. The restart module was rewritten to save a minimal, portable state that can hot start any simulation on the same mesh, with no dependence on simulation time or the original processor count. Optional GDAL support (``-DWITH_GDAL=ON``) allows tRIBS to read GeoTIFF, NetCDF, and other GDAL-supported raster formats. The legacy rainfall forecasting mode, stochastic storm generator, and RIBS-output compatibility mode were removed, an optional monthly stomatal resistance scaling file (``RSPARAMFILE``) was added, and internal performance optimizations reduced typical wall-clock time by 15 to 20%.
 
 tRIBS 5.3.0 (August 2025)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
