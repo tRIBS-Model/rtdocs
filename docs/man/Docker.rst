@@ -6,7 +6,7 @@ Docker
 Getting Started with Docker
 ---------------------------
 
-To get started with Docker, first, install Docker on your system by downloading the appropriate version for your operating system from the official Docker `website <https://www.docker.com/products/docker-desktop/>`_. Docker can be ran both through the desktop client or via command line. In this tutorial we only focus on pulling and running tRIBS and or MeshBuilder via the command line. Additional information about running Docker can be found `here <https://docs.docker.com/>`_.
+To get started with Docker, first, install Docker on your system by downloading the appropriate version for your operating system from the official Docker `website <https://www.docker.com/products/docker-desktop/>`_. Docker can be ran both through the desktop client or via command line. In this tutorial we only focus on pulling and running tRIBS and or MeshBuilder via the command line. Additional information about running Docker can be found `here <https://docs.docker.com/>`__.
 
 Pulling and Running Docker Images
 -------------------------------------------------------
@@ -67,5 +67,5 @@ This will open up the command line for the image. To initiate the MeshBuilder wo
 3. Method for partitioning
 4. And the model base name.
 
-These steps can be recreated manually with a more detailed description of the processes `here <https://github.com/tribshms/MeshBuilder>`_.
+These steps can be recreated manually with a more detailed description of the processes `here <https://github.com/tribshms/MeshBuilder>`__.
 

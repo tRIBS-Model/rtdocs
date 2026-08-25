@@ -1,7 +1,7 @@
 Quick Start
 ===========
 
-This guide provides a walk-through for building and running tRIBS on the Big Spring Benchmark (see :doc:`Benchmarks`). To successfully navigate this guide you will need basic knowledge of using the unix shell and understanding of computer file structures. If you are unfamiliar with basic unix shell commands Software Carpentry provides a nice tutorial `here <https://swcarpentry.github.io/shell-novice/>`_.
+This guide provides a walk-through for building and running tRIBS on the Big Spring Benchmark (see :doc:`Benchmarks`). To successfully navigate this guide you will need basic knowledge of using the unix shell and understanding of computer file structures. If you are unfamiliar with basic unix shell commands Software Carpentry provides a nice tutorial `here <https://swcarpentry.github.io/shell-novice/>`__.
 
 Install Requirements
 --------------------
@@ -40,7 +40,7 @@ Build tRIBS executable
 ----------------------
 Note: If you only need the serial version of tRIBS, this step can be skipped by using one of the provided :doc:`Executables`, which can be unpacked by running ``path/to/tRIBS-6.0.0-*.sh`` in the command line. A parallel executable is not distributed, so building from source as described below is required to run tRIBS in parallel.
 
-1. Download tRIBS source code from the main branch of the GitHub repository. A direct download link is available `here <https://github.com/tRIBS-Model/tRIBS/archive/refs/heads/main.zip>`_. Unzip the repository and using the command line to change to the repository directory. Once in this directory you should see the ``CMakeLists.txt`` file and the ``src`` sub-directory which contains the tRIBS source code. The code block below provides an example of how to do this but you will need to update the path realative to where you have downloaded the tRIBS-main repository.
+1. Download tRIBS source code from the main branch of the GitHub repository. A direct download link is available `here <https://github.com/tRIBS-Model/tRIBS/archive/refs/heads/main.zip>`__. Unzip the repository and using the command line to change to the repository directory. Once in this directory you should see the ``CMakeLists.txt`` file and the ``src`` sub-directory which contains the tRIBS source code. The code block below provides an example of how to do this but you will need to update the path realative to where you have downloaded the tRIBS-main repository.
 
 	.. code-block:: bash
 		
@@ -58,7 +58,7 @@ Note: If you only need the serial version of tRIBS, this step can be skipped by 
 Setup Benchmark
 ---------------
 
-1. Download the Big Spring benchmark `here <https://github.com/tRIBS-Model/tRIBS-benchmarks>`_.
+1. Download the Big Spring benchmark `here <https://github.com/tRIBS-Model/tRIBS-benchmarks>`__.
 
 2. Copy ``tRIBSpar`` into the Big Spring bin sub-directory. Note you will have to double-check that your paths are correct for both locations. Below is an example that will need to be modified.
 

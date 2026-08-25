@@ -91,7 +91,7 @@ Time Series
 Basin Outlet Discharge Time Series
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 8.5** Content of *_Outlet.qout file, or *.qout file for interior nodes requested via OUTLETNODELIST
+  **Table 8.5** Content of ``*_Outlet.qout`` file, or ``*.qout`` file for interior nodes requested via OUTLETNODELIST
 
         .. tabularcolumns:: |c|c|c|c|
 
@@ -109,7 +109,7 @@ Basin Outlet Discharge Time Series
 Hydrologic Time Series at Selected TIN nodes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 8.6** Content of *.pixel files
+  **Table 8.6** Content of ``*.pixel`` files
 
         .. tabularcolumns:: |c|c|c|c|
 
@@ -284,7 +284,7 @@ Hydrologic Time Series at Selected TIN nodes
 Basin-averaged Hydrological Time Series
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 8.7** Content of *.mrf file
+  **Table 8.7** Content of ``*.mrf`` file
 
         .. tabularcolumns:: |c|c|c|c|
 
@@ -357,7 +357,7 @@ Basin-averaged Hydrological Time Series
 Basin-averaged Hydrological Time Series
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 8.8** Content for *.rft files
+  **Table 8.8** Content for ``*.rft`` files
 
         .. tabularcolumns:: |c|c|c|c|
 
@@ -382,7 +382,7 @@ Spatial Output
 Dynamic Spatial Output Tables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 8.9** Content of *timestamp_00d files
+  **Table 8.9** Content of ``*timestamp_00d`` files
 
   By default, all of the variables below are written to the dynamic spatial output files. The optional *DYNVARFILE* keyword (see :doc:`Model Input File`) points to a plain, CSV text file listing a subset of these variable names (Nwt,Mu,Mi,...), to reduce the number of columns written and the associated memory/disk cost; the *ID* column is always included regardless of selection. Names in *DYNVARFILE* must match the *Variable* column below exactly.
 
@@ -498,7 +498,7 @@ Dynamic Spatial Output Tables
 Time-integrated Spatial Output Table
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  **Table 8.10** Content of *timestamp_00i file
+  **Table 8.10** Content of ``*timestamp_00i`` file
 
         .. tabularcolumns:: |c|c|c|c|
 
