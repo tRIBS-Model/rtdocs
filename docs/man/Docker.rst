@@ -1,7 +1,7 @@
 Docker
 =============
 
-`Docker <https://www.docker.com/>`_ is a containerization platform that enables developers to package applications and their dependencies into portable containers. These containers effectively run like a virtual machine and can be utilized across different computing environments. Docker images of tRIBS (both parallel and serial versions) and MeshBuilder are maintained at `Docker Hub <https://hub.docker.com/>`_.
+`Docker <https://www.docker.com/>`_ is a containerization platform that enables developers to package applications and their dependencies into portable containers. These containers effectively run like a virtual machine and can be utilized across different computing environments. The tRIBS image, containing both the serial and parallel binaries, is published to the `GitHub Container Registry <https://github.com/tRIBS-Model/tRIBS/pkgs/container/tribs>`_. The MeshBuilder image remains on `Docker Hub <https://hub.docker.com/>`_ and, as of tRIBS v6.0.0, is no longer required.
 
 Getting Started with Docker
 ---------------------------
@@ -11,7 +11,7 @@ To get started with Docker, first, install Docker on your system by downloading 
 Pulling and Running Docker Images
 -------------------------------------------------------
 
-Once docker has successfully been installed you can pull either image from Docker Hub. We walk through both case here highlighting minor differences in this processes.
+Once docker has successfully been installed you can pull either image. We walk through both cases here, highlighting minor differences in the process.
 
 tRIBS
 ~~~~~
@@ -20,7 +20,7 @@ From the command line execute the following:
 
 .. code-block:: bash
 
-    docker pull tribs/tribs:latest
+    docker pull ghcr.io/tribs-model/tribs:latest
 
 You can check to see if the image is now available locally by:
 
@@ -28,11 +28,11 @@ You can check to see if the image is now available locally by:
 
     docker image
 
-From here the tRIBS image can be accessed by using ``docker run -it tribs/tribs:latest``, where the ``-it`` flag creates an interactive session from the command line. However, in most cases, in order to successfully run tRIBS through the docker image you will need to be able to mount a local volume where data to run tRIBS is located. This can be accomplished by using the ``-v`` flag, where the local directory is mapped to a directory in the image following this structure *path/in/local:path/in/image*. For example, one could run:
+From here the tRIBS image can be accessed by using ``docker run -it ghcr.io/tribs-model/tribs:latest``, where the ``-it`` flag creates an interactive session from the command line. However, in most cases, in order to successfully run tRIBS through the docker image you will need to be able to mount a local volume where data to run tRIBS is located. This can be accomplished by using the ``-v`` flag, where the local directory is mapped to a directory in the image following this structure *path/in/local:path/in/image*. For example, one could run:
 
 .. code-block:: bash
 
-    docker run -it -v /local/path/to/data:/tribs/shared tribs/tribs:latest
+    docker run -it -v /local/path/to/data:/tribs/shared ghcr.io/tribs-model/tribs:latest
 
 In this case ``/tribs/shared`` represents the directory in the image to access your local data. Note: it is also possible to download data into the image. From here one can execute tRIBS normally. There are two tRIBS binaries stored in ``/tribs/bin``, a serial version, ``tRIBS`` and a version for parallel simulation ``tRIBSpar``.
 

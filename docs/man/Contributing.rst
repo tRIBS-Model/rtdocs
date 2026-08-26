@@ -3,7 +3,7 @@ Contributing
 
 Open Source Frame Work
 ----------------------
-tRIBS is available as an open source software through `GitHub <https://github.com/tRIBS-Model/tRIBS>`_ and `Docker Hub <https://hub.docker.com/repository/docker/tribs/tribs/general>`_. More information can be found at :doc:`Using GitHub` and :doc:`Docker`. One of the benefits of open source software is that the underlying code is available for anyone to inspect, modify, debug, and fix. We expect that both maintainers and experienced user at some point or another will have valuable modifications or fixes for tRIBS source code. Below we highlight some resources and provide instructions for contributing to the code base.
+tRIBS is available as an open source software through `GitHub <https://github.com/tRIBS-Model/tRIBS>`_ and the `GitHub Container Registry <https://github.com/tRIBS-Model/tRIBS/pkgs/container/tribs>`_. More information can be found at :doc:`Using GitHub` and :doc:`Docker`. One of the benefits of open source software is that the underlying code is available for anyone to inspect, modify, debug, and fix. We expect that both maintainers and experienced user at some point or another will have valuable modifications or fixes for tRIBS source code. Below we highlight some resources and provide instructions for contributing to the code base.
 
 Resources
 ---------
