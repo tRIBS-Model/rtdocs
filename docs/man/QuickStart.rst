@@ -3,6 +3,11 @@ Quick Start
 
 This guide provides a walk-through for building and running tRIBS on the Big Spring Benchmark (see :doc:`Benchmarks`). To successfully navigate this guide you will need basic knowledge of using the unix shell and understanding of computer file structures. If you are unfamiliar with basic unix shell commands Software Carpentry provides a nice tutorial `here <https://swcarpentry.github.io/shell-novice/>`__.
 
+.. note::
+
+   This walk-through covers one benchmark model run from the command line. For worked examples that build a
+   model from scratch, including the pytRIBS examples and the tRIBS Workshop Sandbox, see :doc:`Examples`.
+
 Install Requirements
 --------------------
 
