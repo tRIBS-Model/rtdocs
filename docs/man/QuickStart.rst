@@ -50,10 +50,10 @@ Note: If you only need the serial version of tRIBS, this step can be skipped by 
 
 	.. code-block:: bash
 
-		cmake -S . -B build -Dparallel=ON -DCMAKE_CXX_FLAGS="-O2"
+		cmake -S . -B build -Dparallel=ON
 		cmake --build build --target all
 
-  The first argument of the first line of code specifies where the required source files (i.e. ``CMakeLists.txt`` and ``src``) are located (i.e. ``-S .``). The second argument specfies where the executable will be built (i.e. ``-B build``). If the directory ``build`` doesn't exist CMake will generate it for you. You can also provide additional compilation flags: Here we provide the flags ``-Dparallel=ON`` which will generate the parallel executable ``tRIBSpar`` and ``-DCMAKE_CXX_FLAGS="-O2"`` which optimizes the executable for additional computational speed.  The second line builds the executable from the newly configured files in the build directory and generates the executable.
+  The first argument of the first line of code specifies where the required source files (i.e. ``CMakeLists.txt`` and ``src``) are located (i.e. ``-S .``). The second argument specfies where the executable will be built (i.e. ``-B build``). If the directory ``build`` doesn't exist CMake will generate it for you. You can also provide additional compilation flags: here we provide the flag ``-Dparallel=ON`` which will generate the parallel executable ``tRIBSpar``. The second line builds the executable from the newly configured files in the build directory and generates the executable.
 
 Setup Benchmark
 ---------------
